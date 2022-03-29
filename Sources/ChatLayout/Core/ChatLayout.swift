@@ -549,7 +549,7 @@ public final class ChatLayout: UICollectionViewLayout {
 			layoutAttributesForPendingAnimation?.frame.size = newItemSize
 		}
 		
-		if isIOS13orHigher {
+		if #available(iOS 13.0, *) {
 			switch preferredMessageAttributes.kind {
 				case .cell:
 					context.invalidateItems(at: [preferredMessageAttributes.indexPath])
@@ -727,9 +727,9 @@ public final class ChatLayout: UICollectionViewLayout {
 						 let initialIndexPath = controller.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate) {
 				attributes = controller.itemAttributes(for: initialIndexPath, kind: .cell, at: .beforeUpdate)?.typedCopy() ?? ChatLayoutAttributes(forCellWith: itemIndexPath)
 				attributes?.indexPath = itemIndexPath
-				if !isIOS13orHigher {
+				if #unavailable(iOS 13.0) {
 					if controller.reloadedIndexes.contains(itemIndexPath) || controller.reloadedSectionsIndexes.contains(itemPath.section) {
-						// It is needed to position the new cell in the middle of the old cell on ios 12
+						/* It is needed to position the new cell in the middle of the old cell on iOS 12. */
 						attributesForPendingAnimations[.cell]?[itemPath] = attributes
 					}
 				}
@@ -819,9 +819,9 @@ public final class ChatLayout: UICollectionViewLayout {
 				attributes = controller.itemAttributes(for: initialIndexPath, kind: kind, at: .beforeUpdate)?.typedCopy() ?? ChatLayoutAttributes(forSupplementaryViewOfKind: elementKind, with: elementIndexPath)
 				attributes?.indexPath = elementIndexPath
 				
-				if !isIOS13orHigher {
+				if #unavailable(iOS 13.0) {
 					if controller.reloadedSectionsIndexes.contains(elementPath.section) {
-						// It is needed to position the new cell in the middle of the old cell on ios 12
+						/* It is needed to position the new cell in the middle of the old cell on iOS 12. */
 						attributesForPendingAnimations[kind]?[elementPath] = attributes
 					}
 				}
@@ -991,15 +991,6 @@ extension ChatLayout {
 	}
 	
 }
-
-
-var isIOS13orHigher: Bool = {
-	if #available(iOS 13.0, *) {
-		return true
-	} else {
-		return false
-	}
-}()
 
 
 var isIOS15_1orHigher: Bool = {
