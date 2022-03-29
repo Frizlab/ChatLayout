@@ -198,7 +198,10 @@ public final class ChatLayout: UICollectionViewLayout {
 	   ************************ */
 	
 	private var needsIOS15_1IssueFix: Bool {
-		return enableIOS15_1Fix && isIOS15_1orHigher && !isIOS15_2orHigher && isUserInitiatedScrolling && !controller.isAnimatedBoundsChange
+		guard enableIOS15_1Fix else {return false}
+		guard #unavailable(iOS 15.2) else {return false}
+		guard #available(iOS 15.1, *) else {return false}
+		return isUserInitiatedScrolling && !controller.isAnimatedBoundsChange
 	}
 	
 	/* ******************
@@ -991,21 +994,3 @@ extension ChatLayout {
 	}
 	
 }
-
-
-var isIOS15_1orHigher: Bool = {
-	if #available(iOS 15.1, *) {
-		return true
-	} else {
-		return false
-	}
-}()
-
-
-var isIOS15_2orHigher: Bool = {
-	if #available(iOS 15.2, *) {
-		return true
-	} else {
-		return false
-	}
-}()
