@@ -148,6 +148,14 @@ public final class ChatLayout: UICollectionViewLayout {
 		return collectionView.frame.size
 	}
 	
+	var effectiveTopOffset: CGFloat {
+		guard let collectionView = collectionView else {
+			return 0
+		}
+		/* Equals to `collectionView.bounds.minY + collectionView.adjustedContentInset.top` */
+		return collectionView.contentOffset.y + collectionView.adjustedContentInset.top
+	}
+	
 	/* ************************
 	   MARK: Private Properties
 	   ************************ */
