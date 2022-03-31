@@ -21,6 +21,7 @@ struct SectionModel {
 	private(set) var items: [ItemModel]
 	
 	var offsetY: CGFloat = 0
+	var headerOffset: CGFloat = 0
 	
 	private unowned var collectionLayout: ChatLayoutRepresentation
 	
@@ -70,19 +71,15 @@ struct SectionModel {
 	mutating func assembleLayout() {
 		var offsetY: CGFloat = 0
 		
-		if header != nil {
-			header?.offsetY = 0
-			offsetY += header?.frame.height ?? 0
-		}
+		header?.offsetY = headerOffset
+		offsetY += header?.frame.height ?? 0
 		
 		for rowIndex in 0..<items.count {
 			items[rowIndex].offsetY = offsetY
 			offsetY += items[rowIndex].height + collectionLayout.settings.interItemSpacing
 		}
 		
-		if footer != nil {
-			footer?.offsetY = offsetY
-		}
+		footer?.offsetY = offsetY
 	}
 	
 	/* ****************************************************************
@@ -145,10 +142,6 @@ struct SectionModel {
 	}
 	
 	mutating func set(footer: ItemModel?) {
-		guard let _ = self.footer, let _ = footer else {
-			self.footer = footer
-			return
-		}
 		self.footer = footer
 	}
 	

@@ -41,6 +41,14 @@ struct LayoutModel {
 		for sectionIndex in 0..<sections.count {
 			sectionIndexByIdentifierCache[sections[sectionIndex].id] = sectionIndex
 			sections[sectionIndex].offsetY = offset
+			if offset < collectionLayout.visibleBounds.minY && offset + sections[sectionIndex].height > collectionLayout.visibleBounds.minY {
+				let normal = collectionLayout.topOffset - offset
+				let pushed = sections[sectionIndex].height + collectionLayout.settings.interSectionSpacing - (sections[sectionIndex].header?.height ?? 0)
+				sections[sectionIndex].headerOffset = min(normal, pushed)
+			} else {
+				sections[sectionIndex].headerOffset = 0
+			}
+			sections[sectionIndex].assembleLayout()
 			offset += sections[sectionIndex].height + collectionLayout.settings.interSectionSpacing
 			if let header = sections[sectionIndex].header {
 				itemPathByIdentifierCache[ItemUUIDKey(kind: .header, id: header.id)] = ItemPath(item: 0, section: sectionIndex)

@@ -21,6 +21,7 @@ protocol ChatLayoutRepresentation: AnyObject {
 	var visibleBounds: CGRect {get}
 	var layoutFrame: CGRect {get}
 	
+	var topOffset: CGFloat {get}
 	var adjustedContentInset: UIEdgeInsets {get}
 	
 	var keepContentOffsetAtBottomOnBatchUpdates: Bool {get}
@@ -77,6 +78,10 @@ final class StateController {
 		var layoutModel = LayoutModel(sections: sections, collectionLayout: layoutRepresentation)
 		layoutModel.assembleLayout()
 		storage[state] = layoutModel
+	}
+	
+	func reassembleLayout(at state: ModelState) {
+		storage[state]?.assembleLayout()
 	}
 	
 	func contentHeight(at state: ModelState) -> CGFloat {
@@ -601,7 +606,7 @@ final class StateController {
 	private func allAttributes(at state: ModelState, visibleRect: CGRect? = nil) -> [ChatLayoutAttributes] {
 		let layout = self.layout(at: state)
 		
-		if let visibleRect = visibleRect {
+		if let visibleRect = visibleRect, false {
 			enum TraverseState {
 				case notFound
 				case found
@@ -610,7 +615,7 @@ final class StateController {
 			
 			var traverseState: TraverseState = .notFound
 			
-			func check(rect: CGRect) -> Bool {
+			func check(rect: CGRect, isHeader: Bool = false) -> Bool {
 				switch traverseState {
 					case .notFound:
 						if visibleRect.intersects(rect) {
@@ -642,7 +647,7 @@ final class StateController {
 				let section = layout.sections[sectionIndex]
 				let sectionPath = ItemPath(item: 0, section: sectionIndex)
 				if let headerFrame = itemFrame(for: sectionPath, kind: .header, at: state, isFinal: true),
-					check(rect: headerFrame)
+					check(rect: headerFrame, isHeader: true)
 				{
 					allRects.append((frame: headerFrame, indexPath: sectionPath, kind: .header))
 				}
@@ -858,6 +863,7 @@ final class StateController {
 	}
 	
 }
+
 
 extension RandomAccessCollection where Index == Int {
 	

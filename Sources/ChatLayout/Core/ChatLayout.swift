@@ -148,6 +148,13 @@ public final class ChatLayout: UICollectionViewLayout {
 		return collectionView.frame.size
 	}
 	
+	var topOffset: CGFloat {
+		guard let collectionView = collectionView else {
+			return 0
+		}
+		return collectionView.contentOffset.y + collectionView.adjustedContentInset.top
+	}
+	
 	/* ************************
 	   MARK: Private Properties
 	   ************************ */
@@ -156,14 +163,16 @@ public final class ChatLayout: UICollectionViewLayout {
 		
 		let rawValue: UInt
 		
-		static let recreateSectionModels      = PrepareActions(rawValue: 1 << 0)
+		static let recreateSectionModels        = PrepareActions(rawValue: 1 << 0)
 		
-		static let updateLayoutMetrics        = PrepareActions(rawValue: 1 << 1)
+		static let updateLayoutMetrics          = PrepareActions(rawValue: 1 << 1)
+		static let updatePinnedHeaderAttributes = PrepareActions(rawValue: 1 << 2)
 		
-		static let cachePreviousWidth         = PrepareActions(rawValue: 1 << 2)
-		static let cachePreviousContentInsets = PrepareActions(rawValue: 1 << 3)
+		static let cachePreviousWidth           = PrepareActions(rawValue: 1 << 3)
+		static let cachePreviousContentInsets   = PrepareActions(rawValue: 1 << 4)
+		static let cachePreviousTopOffset       = PrepareActions(rawValue: 1 << 5)
 		
-		static let switchStates               = PrepareActions(rawValue: 1 << 4)
+		static let switchStates                 = PrepareActions(rawValue: 1 << 6)
 		
 	}
 	
@@ -383,6 +392,9 @@ public final class ChatLayout: UICollectionViewLayout {
 				sections.append(section)
 			}
 			controller.set(sections, at: state)
+			
+		} else if prepareActions.contains(.updatePinnedHeaderAttributes) {
+			controller.reassembleLayout(at: state)
 		}
 		
 		if prepareActions.contains(.cachePreviousContentInsets) {
@@ -570,6 +582,7 @@ public final class ChatLayout: UICollectionViewLayout {
 	/** Asks the layout object if the new bounds require a layout update. */
 	public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
 		let shouldInvalidateLayout = (
+			settings.pinHeaders ||
 			cachedCollectionViewSize != .some(newBounds.size) ||
 			cachedCollectionViewInset != .some(adjustedContentInset) ||
 			invalidationActions.contains(.shouldInvalidateOnBoundsChange)
@@ -583,6 +596,11 @@ public final class ChatLayout: UICollectionViewLayout {
 	public override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
 		let invalidationContext = super.invalidationContext(forBoundsChange: newBounds) as! ChatLayoutInvalidationContext
 		invalidationContext.invalidateLayoutMetrics = false
+		invalidationContext.invalidatePinnedHeaderOnly = !(
+			cachedCollectionViewSize != .some(newBounds.size) ||
+			cachedCollectionViewInset != .some(adjustedContentInset) ||
+			invalidationActions.contains(.shouldInvalidateOnBoundsChange)
+		)
 		return invalidationContext
 	}
 	
@@ -599,6 +617,11 @@ public final class ChatLayout: UICollectionViewLayout {
 		}
 		
 		controller.resetCachedAttributes()
+		
+		guard !context.invalidatePinnedHeaderOnly else {
+			prepareActions.formUnion([.updatePinnedHeaderAttributes])
+			return super.invalidateLayout(with: context)
+		}
 		
 		dontReturnAttributes = context.invalidateDataSourceCounts && !context.invalidateEverything
 		

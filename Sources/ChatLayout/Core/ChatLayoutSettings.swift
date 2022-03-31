@@ -29,4 +29,7 @@ public struct ChatLayoutSettings {
 	/** Additional insets for the `ChatLayout` content. */
 	public var additionalInsets: UIEdgeInsets = .zero
 	
+	/** Pin headers on top (like a UITableView). */
+	public var pinHeaders: Bool = false
+	
 }
