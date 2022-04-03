@@ -422,7 +422,27 @@ public final class ChatLayout: UICollectionViewLayout {
 			return nil
 		}
 		
-		let visibleAttributes = controller.layoutAttributesForElements(in: rect, state: state)
+		/* TVR */
+		var visibleAttributes = controller.layoutAttributesForElements(in: rect, state: state)
+		let headers = visibleAttributes.enumerated().filter{ $0.element.kind == .header }.sorted{ $0.element.frame.minY < $1.element.frame.minY }
+		if let idx = headers.firstIndex(where: { $0.element.frame.minY >= effectiveTopOffset }), idx > 0 {
+			if idx > 1 {
+				let refHeader = headers[idx - 1].element
+				let modifiedIdx = headers[idx - 2].offset
+				let modifiedHeader = headers[idx - 2].element.typedCopy()
+				let normal = effectiveTopOffset
+				let pushed = refHeader.frame.minY - modifiedHeader.frame.height - settings.interSectionSpacing
+				modifiedHeader.frame.origin.y = min(normal, pushed)
+				visibleAttributes[modifiedIdx] = modifiedHeader
+			}
+			let refHeader = headers[idx].element
+			let modifiedIdx = headers[idx - 1].offset
+			let modifiedHeader = headers[idx - 1].element.typedCopy()
+			let normal = effectiveTopOffset
+			let pushed = refHeader.frame.minY - modifiedHeader.frame.height - settings.interSectionSpacing
+			modifiedHeader.frame.origin.y = min(normal, pushed)
+			visibleAttributes[modifiedIdx] = modifiedHeader
+		}
 		return visibleAttributes
 	}
 	
@@ -584,7 +604,8 @@ public final class ChatLayout: UICollectionViewLayout {
 		)
 		
 		invalidationActions.remove(.shouldInvalidateOnBoundsChange)
-		return shouldInvalidateLayout
+		/* TVR */
+		return shouldInvalidateLayout || true
 	}
 	
 	/** Retrieves a context object that defines the portions of the layout that should change when a bounds change occurs. */

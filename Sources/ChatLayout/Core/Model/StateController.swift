@@ -101,7 +101,8 @@ final class StateController {
 			let cachedAttributesState = cachedAttributesState,
 			cachedAttributesState.rect.contains(rect)
 		{
-			return cachedAttributesState.attributes.binarySearchRange(predicate: predicate)
+			/* TVR */
+			return cachedAttributesState.attributes//.binarySearchRange(predicate: predicate)
 		} else {
 			let totalRect: CGRect
 			switch state {
@@ -113,7 +114,8 @@ final class StateController {
 				cachedAttributesState = (rect: totalRect, attributes: attributes)
 			}
 			let visibleAttributes = rect != totalRect ? attributes.binarySearchRange(predicate: predicate) : attributes
-			return visibleAttributes
+			/* TVR */
+			return attributes
 		}
 	}
 	
@@ -601,7 +603,8 @@ final class StateController {
 	private func allAttributes(at state: ModelState, visibleRect: CGRect? = nil) -> [ChatLayoutAttributes] {
 		let layout = self.layout(at: state)
 		
-		if let visibleRect = visibleRect {
+		/* TVR */
+		if false, let visibleRect = visibleRect {
 			enum TraverseState {
 				case notFound
 				case found
