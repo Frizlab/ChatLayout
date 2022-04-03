@@ -29,4 +29,7 @@ public struct ChatLayoutSettings {
 	/** Additional insets for the `ChatLayout` content. */
 	public var additionalInsets: UIEdgeInsets = .zero
 	
+	/** Pinning must be explicitly allowed because it has a performance impact (the layout must be invalidated whenever the collection view is scrolled). */
+	public var allowPinning: Bool = false
+	
 }

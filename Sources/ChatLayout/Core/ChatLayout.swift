@@ -248,6 +248,7 @@ public final class ChatLayout: UICollectionViewLayout {
 	 - Parameter edge: The edge of the `UICollectionView`
 	 - Returns: `ChatLayoutPositionSnapshot` */
 	public func getContentOffsetSnapshot(from edge: ChatLayoutPositionSnapshot.Edge) -> ChatLayoutPositionSnapshot? {
+#warning("Pinning is not checked. If we snapshot to a pinned item, this would not mean anything.")
 		guard let collectionView = collectionView else {
 			return nil
 		}
@@ -422,27 +423,7 @@ public final class ChatLayout: UICollectionViewLayout {
 			return nil
 		}
 		
-		/* TVR */
-		var visibleAttributes = controller.layoutAttributesForElements(in: rect, state: state)
-		let headers = visibleAttributes.enumerated().filter{ $0.element.kind == .header }.sorted{ $0.element.frame.minY < $1.element.frame.minY }
-		if let idx = headers.firstIndex(where: { $0.element.frame.minY >= effectiveTopOffset }), idx > 0 {
-			if idx > 1 {
-				let refHeader = headers[idx - 1].element
-				let modifiedIdx = headers[idx - 2].offset
-				let modifiedHeader = headers[idx - 2].element.typedCopy()
-				let normal = effectiveTopOffset
-				let pushed = refHeader.frame.minY - modifiedHeader.frame.height - settings.interSectionSpacing
-				modifiedHeader.frame.origin.y = min(normal, pushed)
-				visibleAttributes[modifiedIdx] = modifiedHeader
-			}
-			let refHeader = headers[idx].element
-			let modifiedIdx = headers[idx - 1].offset
-			let modifiedHeader = headers[idx - 1].element.typedCopy()
-			let normal = effectiveTopOffset
-			let pushed = refHeader.frame.minY - modifiedHeader.frame.height - settings.interSectionSpacing
-			modifiedHeader.frame.origin.y = min(normal, pushed)
-			visibleAttributes[modifiedIdx] = modifiedHeader
-		}
+		let visibleAttributes = controller.layoutAttributesForElements(in: rect, state: state)
 		return visibleAttributes
 	}
 	
@@ -650,9 +631,10 @@ public final class ChatLayout: UICollectionViewLayout {
 		
 		if let currentPositionSnapshot = currentPositionSnapshot {
 			let contentHeight = controller.contentHeight(at: state)
-			if let frame = controller.itemFrame(for: currentPositionSnapshot.indexPath.itemPath, kind: currentPositionSnapshot.kind, at: state, isFinal: true),
+			if let frame = controller.itemFrame(for: currentPositionSnapshot.indexPath.itemPath, kind: currentPositionSnapshot.kind, at: state, isFinal: true, allowPinning: false)?.frame,
 				contentHeight != 0,
-				contentHeight > visibleBounds.size.height {
+				contentHeight > visibleBounds.size.height
+			{
 				switch currentPositionSnapshot.edge {
 					case .top:
 						let desiredOffset = frame.minY - currentPositionSnapshot.offset - collectionView.adjustedContentInset.top - settings.additionalInsets.top
@@ -697,6 +679,7 @@ public final class ChatLayout: UICollectionViewLayout {
 	
 	/** Notifies the layout object that the contents of the collection view are about to change. */
 	public override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
+		controller.doOffset = true
 		let changeItems = updateItems.compactMap{ ChangeItem(with: $0) }
 		controller.process(changeItems: changeItems)
 		state = .afterUpdate
@@ -706,6 +689,7 @@ public final class ChatLayout: UICollectionViewLayout {
 	
 	/** Performs any additional animations or clean up needed during a collection view update. */
 	public override func finalizeCollectionViewUpdates() {
+		controller.doOffset = false
 		controller.proposedCompensatingOffset = 0
 		
 		if keepContentOffsetAtBottomOnBatchUpdates,
@@ -847,7 +831,8 @@ public final class ChatLayout: UICollectionViewLayout {
 				}
 				attributesForPendingAnimations[kind]?[elementPath] = attributes
 			} else if let itemIdentifier = controller.itemIdentifier(for: elementPath, kind: kind, at: .afterUpdate),
-						 let initialIndexPath = controller.itemPath(by: itemIdentifier, kind: kind, at: .beforeUpdate) {
+						 let initialIndexPath = controller.itemPath(by: itemIdentifier, kind: kind, at: .beforeUpdate)
+			{
 				attributes = controller.itemAttributes(for: initialIndexPath, kind: kind, at: .beforeUpdate)?.typedCopy() ?? ChatLayoutAttributes(forSupplementaryViewOfKind: elementKind, with: elementIndexPath)
 				attributes?.indexPath = elementIndexPath
 				
@@ -890,7 +875,8 @@ public final class ChatLayout: UICollectionViewLayout {
 					delegate.finalLayoutAttributesForDeletedItem(self, of: .cell, at: elementIndexPath, modifying: attributes)
 				}
 			} else if let itemIdentifier = controller.itemIdentifier(for: elementPath, kind: kind, at: .beforeUpdate),
-						 let finalIndexPath = controller.itemPath(by: itemIdentifier, kind: kind, at: .afterUpdate) {
+						 let finalIndexPath = controller.itemPath(by: itemIdentifier, kind: kind, at: .afterUpdate)
+			{
 				if controller.movedSectionsIndexes.contains(elementPath.section) || controller.reloadedSectionsIndexes.contains(elementPath.section) {
 					attributes = controller.itemAttributes(for: finalIndexPath, kind: kind, at: .afterUpdate)?.typedCopy()
 				} else {
@@ -923,7 +909,7 @@ extension ChatLayout {
 	func configuration(for element: ItemKind, at itemPath: ItemPath) -> ItemModel.Configuration {
 		let indexPath = itemPath.indexPath
 		let itemSize = estimatedSize(for: element, at: indexPath)
-		return ItemModel.Configuration(alignment: alignment(for: element, at: indexPath), preferredSize: itemSize.estimated, calculatedSize: itemSize.exact)
+		return ItemModel.Configuration(preferredSize: itemSize.estimated, calculatedSize: itemSize.exact, alignment: alignment(for: element, at: indexPath), pinning: pinning(for: element, at: indexPath))
 	}
 	
 	private func estimatedSize(for element: ItemKind, at indexPath: IndexPath) -> (estimated: CGSize, exact: CGSize?) {
@@ -957,6 +943,13 @@ extension ChatLayout {
 			return .fullWidth
 		}
 		return delegate.alignmentForItem(self, of: element, at: indexPath)
+	}
+	
+	private func pinning(for element: ItemKind, at indexPath: IndexPath) -> ChatItemPinning {
+		guard settings.allowPinning, let delegate = delegate else {
+			return .none
+		}
+		return delegate.pinningForItem(self, of: element, at: indexPath)
 	}
 	
 	private var estimatedItemSize: CGSize {

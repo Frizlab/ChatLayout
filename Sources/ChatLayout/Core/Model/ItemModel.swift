@@ -16,9 +16,11 @@ struct ItemModel {
 	
 	struct Configuration {
 		
-		let alignment: ChatItemAlignment
 		let preferredSize: CGSize
 		let calculatedSize: CGSize?
+		
+		let alignment: ChatItemAlignment
+		let pinning: ChatItemPinning
 		
 	}
 	
@@ -29,6 +31,7 @@ struct ItemModel {
 	var calculatedOnce: Bool = false
 	
 	var alignment: ChatItemAlignment
+	var pinning: ChatItemPinning
 	
 	var offsetY: CGFloat = .zero
 	
@@ -58,6 +61,7 @@ struct ItemModel {
 	
 	init(id: UUID = UUID(), with configuration: Configuration) {
 		self.id = id
+		self.pinning = configuration.pinning
 		self.alignment = configuration.alignment
 		self.preferredSize = configuration.preferredSize
 		self.calculatedSize = configuration.calculatedSize

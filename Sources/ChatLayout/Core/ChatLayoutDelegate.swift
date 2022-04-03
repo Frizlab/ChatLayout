@@ -63,11 +63,23 @@ public protocol ChatLayoutDelegate: AnyObject {
 	 `ChatLayout` will call this method to ask what type of alignment the item should have.
 	 
 	 - Parameters:
-	   - chatLayout: ChatLayout reference.
-	   - kind: Type of element represented by `ItemKind`.
-	   - indexPath: Index path of the item.
+	 - chatLayout: ChatLayout reference.
+	 - kind: Type of element represented by `ItemKind`.
+	 - indexPath: Index path of the item.
 	 - Returns: `ChatItemAlignment`. */
 	func alignmentForItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath) -> ChatItemAlignment
+	
+	/**
+	 `ChatLayout` will call this method to ask what type of pinning the item should have.
+	 
+	 - Note: Pinning must be explicitly allowed in ChatLayout’s settings.
+	 
+	 - Parameters:
+	 - chatLayout: ChatLayout reference.
+	 - kind: Type of element represented by `ItemKind`.
+	 - indexPath: Index path of the item.
+	 - Returns: `ChatItemAlignment`. */
+	func pinningForItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath) -> ChatItemPinning
 	
 	/**
 	 Asks the delegate to modify a layout attributes instance so that it represents the initial visual state of an item being inserted.
@@ -116,6 +128,11 @@ public extension ChatLayoutDelegate {
 	/** Default implementation returns: `ChatItemAlignment.fullWidth`. */
 	func alignmentForItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath) -> ChatItemAlignment {
 		return .fullWidth
+	}
+	
+	/** Default implementation returns: ``ChatItemPinning.none``. */
+	func pinningForItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath) -> ChatItemPinning {
+		return .none
 	}
 	
 	/** Default implementation sets a `ChatLayoutAttributes.alpha` to zero. */

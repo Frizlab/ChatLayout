@@ -20,6 +20,7 @@ protocol ChatLayoutRepresentation: AnyObject {
 	var viewSize: CGSize {get}
 	var visibleBounds: CGRect {get}
 	var layoutFrame: CGRect {get}
+	var effectiveTopOffset: CGFloat {get}
 	
 	var adjustedContentInset: UIEdgeInsets {get}
 	
@@ -101,8 +102,7 @@ final class StateController {
 			let cachedAttributesState = cachedAttributesState,
 			cachedAttributesState.rect.contains(rect)
 		{
-			/* TVR */
-			return cachedAttributesState.attributes//.binarySearchRange(predicate: predicate)
+			return cachedAttributesState.attributes.binarySearchRange(predicate: predicate)
 		} else {
 			let totalRect: CGRect
 			switch state {
@@ -110,12 +110,12 @@ final class StateController {
 				case  .afterUpdate: totalRect = rect
 			}
 			let attributes = allAttributes(at: state, visibleRect: totalRect)
+				.sorted{ $0.frame.minY < $1.frame.minY }
 			if !ignoreCache {
 				cachedAttributesState = (rect: totalRect, attributes: attributes)
 			}
 			let visibleAttributes = rect != totalRect ? attributes.binarySearchRange(predicate: predicate) : attributes
-			/* TVR */
-			return attributes
+			return visibleAttributes
 		}
 	}
 	
@@ -147,7 +147,7 @@ final class StateController {
 					/* This occurs when getting layout attributes for initial / final animations. */
 					return nil
 				}
-				guard let headerFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true),
+				guard let headerFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true)?.frame,
 						let item = item(for: itemPath, kind: kind, at: state)
 				else {
 					return nil
@@ -173,7 +173,7 @@ final class StateController {
 					/* This occurs when getting layout attributes for initial / final animations. */
 					return nil
 				}
-				guard let footerFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true),
+				guard let footerFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true)?.frame,
 						let item = item(for: itemPath, kind: kind, at: state)
 				else {
 					return nil
@@ -199,7 +199,7 @@ final class StateController {
 					/* This occurs when getting layout attributes for initial / final animations. */
 					return nil
 				}
-				guard let itemFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true),
+				guard let itemFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true)?.frame,
 						let item = item(for: itemPath, kind: kind, at: state)
 				else {
 					return nil
@@ -226,7 +226,8 @@ final class StateController {
 		return attributes
 	}
 	
-	func itemFrame(for itemPath: ItemPath, kind: ItemKind, at state: ModelState, isFinal: Bool = false) -> CGRect? {
+	var doOffset = false
+	func itemFrame(for itemPath: ItemPath, kind: ItemKind, at state: ModelState, isFinal: Bool = false, allowPinning: Bool = true) -> (frame: CGRect, pinned: Bool)? {
 		guard itemPath.section < layout(at: state).sections.count else {
 			return nil
 		}
@@ -244,21 +245,56 @@ final class StateController {
 		switch item.alignment {
 			case .leading:
 				dx = additionalInsets.left
+				
 			case .trailing:
 				dx = visibleBounds.size.width - itemFrame.width - additionalInsets.right
+				
 			case .center:
 				let availableWidth = visibleBounds.size.width - additionalInsets.right - additionalInsets.left
 				dx = additionalInsets.left + availableWidth / 2 - itemFrame.width / 2
+				
 			case .fullWidth:
 				dx = additionalInsets.left
 				itemFrame.size.width = layoutRepresentation.layoutFrame.size.width
 		}
 		
-		itemFrame = itemFrame.offsetBy(dx: dx, dy: section.offsetY)
-		if isFinal {
-			itemFrame = offsetByCompensation(frame: itemFrame, at: itemPath, for: state, backward: true)
+		let pinningOffset: CGFloat
+		switch (allowPinning, item.pinning) {
+			case (false, _), (_, .none):
+				pinningOffset = 0
+				
+			case (true, .top):
+				let delta = layoutRepresentation.effectiveTopOffset - section.offsetY - (doOffset && state == .beforeUpdate ? totalProposedCompensatingOffset : 0)
+				if (layout(at: state).sections.count < 175 && itemPath.section == 75) ||
+					(layout(at: state).sections.count > 175 && itemPath.section == 125)
+				{
+					print("TOP OFFSET: \(layoutRepresentation.effectiveTopOffset)")
+					print("SEC OFFSET: \(section.offsetY)")
+					print("CPO OFFSET: \(compensationOffset(for: state, backward: false))")
+					print("TCO OFFSET: \(totalProposedCompensatingOffset)")
+					print("STATE: \(state)")
+					print("DO: \(doOffset)")
+					print("DELTA: \(delta)")
+					if delta > 0 {
+						()
+					}
+				}
+				if delta > 0 {
+					/* The section starts above the current offset, we must move the item to have the pinning. */
+					pinningOffset = min(delta, section.height - itemFrame.height)
+				} else {
+					pinningOffset = 0
+				}
+				
+			case (true, .bottom):
+				fatalError("Not implemented")
 		}
-		return itemFrame
+		
+		itemFrame = itemFrame.offsetBy(dx: dx, dy: section.offsetY + pinningOffset)
+		if isFinal {
+			itemFrame = offsetByCompensation(frame: itemFrame, for: state, backward: true)
+		}
+		return (itemFrame, abs(pinningOffset) > 0.001)
 	}
 	
 	func itemPath(by itemId: UUID, kind: ItemKind, at state: ModelState) -> ItemPath? {
@@ -564,10 +600,12 @@ final class StateController {
 		guard contentHeight != 0 else {
 			return .zero
 		}
-		/* This is a workaround for `layoutAttributesForElementsInRect:` not getting invoked enough times if `collectionViewContentSize.width` is not smaller than the width of the collection view, minus horizontal insets.
+		/* This is a workaround for `layoutAttributesForElementsInRect:` not getting invoked enough times if
+		 *  `collectionViewContentSize.width` is not smaller than the width of the collection view, minus horizontal insets.
 		 * This results in visual defects when performing batch updates.
-		 * To work around this, we subtract 0.0001 from our content size width calculation; this small decrease in `collectionViewContentSize.width` is enough to work around the incorrect, internal collection view `CGRect` checks,
-		 * without introducing any visual differences for elements in the collection view.
+		 * To work around this, we subtract 0.0001 from our content size width calculation;
+		 *  this small decrease in `collectionViewContentSize.width` is enough to work around the incorrect internal collection view `CGRect` checks,
+		 *  without introducing any visual differences for elements in the collection view.
 		 * See https://openradar.appspot.com/radar?id=5025850143539200 for more details. */
 		let contentSize = CGSize(width: layoutRepresentation.visibleBounds.size.width - 0.0001, height: contentHeight)
 		return contentSize
@@ -603,8 +641,7 @@ final class StateController {
 	private func allAttributes(at state: ModelState, visibleRect: CGRect? = nil) -> [ChatLayoutAttributes] {
 		let layout = self.layout(at: state)
 		
-		/* TVR */
-		if false, let visibleRect = visibleRect {
+		if let visibleRect = visibleRect {
 			enum TraverseState {
 				case notFound
 				case found
@@ -613,7 +650,12 @@ final class StateController {
 			
 			var traverseState: TraverseState = .notFound
 			
-			func check(rect: CGRect) -> Bool {
+			/* We need to know if the rect is coming from a pinned item because if it is, */
+			func check(rect: CGRect, isPinned: Bool) -> Bool {
+				guard !isPinned else {
+					return visibleRect.intersects(rect)
+				}
+				
 				switch traverseState {
 					case .notFound:
 						if visibleRect.intersects(rect) {
@@ -644,8 +686,8 @@ final class StateController {
 			for sectionIndex in 0..<layout.sections.count {
 				let section = layout.sections[sectionIndex]
 				let sectionPath = ItemPath(item: 0, section: sectionIndex)
-				if let headerFrame = itemFrame(for: sectionPath, kind: .header, at: state, isFinal: true),
-					check(rect: headerFrame)
+				if let (headerFrame, pinned) = itemFrame(for: sectionPath, kind: .header, at: state, isFinal: true),
+					check(rect: headerFrame, isPinned: pinned)
 				{
 					allRects.append((frame: headerFrame, indexPath: sectionPath, kind: .header))
 				}
@@ -658,7 +700,7 @@ final class StateController {
 				if traverseState == .notFound, !section.items.isEmpty {
 					func predicate(itemIndex: Int) -> ComparisonResult {
 						let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-						guard let itemFrame = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true) else {
+						guard let (itemFrame, pinned) = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true) else {
 							return .orderedDescending
 						}
 						if itemFrame.intersects(visibleRect) {
@@ -672,13 +714,13 @@ final class StateController {
 					
 					/* Find if any of the items of the section is visible. */
 					if [ComparisonResult.orderedSame, .orderedDescending].contains(predicate(itemIndex: section.items.count - 1)),
-						let firstMatchingIndex = Array(0...section.items.count - 1).binarySearch(predicate: predicate)
+						let firstMatchingIndex = Array(0..<section.items.count).binarySearch(predicate: predicate)
 					{
 						/* Find first item that is visible. */
 						startingIndex = firstMatchingIndex
 						for itemIndex in (0..<firstMatchingIndex).reversed() {
 							let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-							guard let itemFrame = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true) else {
+							guard let (itemFrame, pinned) = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true) else {
 								continue
 							}
 							guard itemFrame.maxY >= visibleRect.minY else {
@@ -695,8 +737,8 @@ final class StateController {
 				if startingIndex < section.items.count {
 					for itemIndex in startingIndex..<section.items.count {
 						let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-						if let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true),
-							check(rect: itemFrame)
+						if let (itemFrame, pinned) = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true),
+							check(rect: itemFrame, isPinned: pinned)
 						{
 							if state == .beforeUpdate || isAnimatedBoundsChange {
 								allRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))
@@ -706,7 +748,7 @@ final class StateController {
 											let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate),
 											let item = self.item(for: initialIndexPath, kind: .cell, at: .beforeUpdate),
 											item.calculatedOnce == true,
-											let itemFrame = self.itemFrame(for: initialIndexPath, kind: .cell, at: .beforeUpdate, isFinal: false),
+											let itemFrame = self.itemFrame(for: initialIndexPath, kind: .cell, at: .beforeUpdate, isFinal: false)?.frame,
 											itemFrame.intersects(layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: -totalProposedCompensatingOffset))
 									else {
 										return false
@@ -716,7 +758,7 @@ final class StateController {
 								var itemWillBeVisible: Bool {
 									let offsetVisibleBounds = layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: proposedCompensatingOffset + batchUpdateCompensatingOffset)
 									if insertedIndexes.contains(itemPath.indexPath),
-										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true),
+										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true)?.frame,
 										itemFrame.intersects(offsetVisibleBounds)
 									{
 										return true
@@ -724,7 +766,7 @@ final class StateController {
 									if let itemIdentifier = self.itemIdentifier(for: itemPath, kind: .cell, at: .afterUpdate),
 										let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate)?.indexPath,
 										movedIndexes.contains(initialIndexPath) || reloadedIndexes.contains(initialIndexPath),
-										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true),
+										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true)?.frame,
 										itemFrame.intersects(offsetVisibleBounds)
 									{
 										return true
@@ -742,8 +784,8 @@ final class StateController {
 					}
 				}
 				
-				if let footerFrame = itemFrame(for: sectionPath, kind: .footer, at: state, isFinal: true),
-					check(rect: footerFrame)
+				if let (footerFrame, pinned) = itemFrame(for: sectionPath, kind: .footer, at: state, isFinal: true),
+					check(rect: footerFrame, isPinned: pinned)
 				{
 					allRects.append((frame: footerFrame, indexPath: sectionPath, kind: .footer))
 				}
@@ -784,7 +826,8 @@ final class StateController {
 		switch action {
 			case .insert:
 				guard isLayoutBiggerThanVisibleBounds(at: .afterUpdate),
-						let itemFrame = itemFrame(for: itemPath, kind: kind, at: .afterUpdate) else {
+						let itemFrame = itemFrame(for: itemPath, kind: kind, at: .afterUpdate)?.frame
+				else {
 					return
 				}
 				if itemFrame.minY.rounded() - layoutRepresentation.settings.interItemSpacing <= minY {
@@ -799,7 +842,8 @@ final class StateController {
 				}
 			case .delete:
 				guard isLayoutBiggerThanVisibleBounds(at: .beforeUpdate),
-						let deletedFrame = itemFrame(for: itemPath, kind: kind, at: .beforeUpdate) else {
+						let deletedFrame = itemFrame(for: itemPath, kind: kind, at: .beforeUpdate)?.frame
+				else {
 					return
 				}
 				if deletedFrame.minY.rounded() <= minY {
@@ -827,6 +871,7 @@ final class StateController {
 				if section.offsetY.rounded() - layoutRepresentation.settings.interSectionSpacing <= minY {
 					proposedCompensatingOffset += section.height + layoutRepresentation.settings.interSectionSpacing
 				}
+				
 			case let .frameUpdate(previousFrame, newFrame):
 				guard sectionIndex < layout(at: .afterUpdate).sections.count,
 						isLayoutBiggerThanVisibleBounds(at: .afterUpdate, withFullCompensation: true) else {
@@ -835,6 +880,7 @@ final class StateController {
 				if newFrame.minY.rounded() <= minY {
 					batchUpdateCompensatingOffset += newFrame.height - previousFrame.height
 				}
+				
 			case .delete:
 				guard isLayoutBiggerThanVisibleBounds(at: .afterUpdate),
 						sectionIndex < layout(at: .afterUpdate).sections.count else {
@@ -850,14 +896,24 @@ final class StateController {
 		
 	}
 	
-	private func offsetByCompensation(frame: CGRect, at itemPath: ItemPath, for state: ModelState, backward: Bool = false) -> CGRect {
+	private func offsetByCompensation(frame: CGRect, for state: ModelState, backward: Bool = false) -> CGRect {
 		guard layoutRepresentation.keepContentOffsetAtBottomOnBatchUpdates,
 				state == .afterUpdate,
 				isLayoutBiggerThanVisibleBounds(at: .afterUpdate)
 		else {
 			return frame
 		}
-		return frame.offsetBy(dx: 0, dy: proposedCompensatingOffset * (backward ? -1 : 1))
+		return frame.offsetBy(dx: 0, dy: compensationOffset(for: state, backward: backward))
+	}
+	
+	private func compensationOffset(for state: ModelState, backward: Bool = false) -> CGFloat {
+		guard layoutRepresentation.keepContentOffsetAtBottomOnBatchUpdates,
+				state == .afterUpdate,
+				isLayoutBiggerThanVisibleBounds(at: .afterUpdate)
+		else {
+			return 0
+		}
+		return proposedCompensatingOffset * (backward ? -1 : 1)
 	}
 	
 }
