@@ -50,6 +50,7 @@ final class StateController {
 	var totalProposedCompensatingOffset: CGFloat = 0
 	
 	var isAnimatedBoundsChange = false
+	var isCollectionViewUpdate = false
 	
 	private(set) var storage: [ModelState: LayoutModel]
 	
@@ -226,7 +227,6 @@ final class StateController {
 		return attributes
 	}
 	
-	var doOffset = false
 	func itemFrame(for itemPath: ItemPath, kind: ItemKind, at state: ModelState, isFinal: Bool = false, allowPinning: Bool = true) -> (frame: CGRect, pinned: Bool)? {
 		guard itemPath.section < layout(at: state).sections.count else {
 			return nil
@@ -264,21 +264,24 @@ final class StateController {
 				pinningOffset = 0
 				
 			case (true, .top):
-				let delta = layoutRepresentation.effectiveTopOffset - section.offsetY - (doOffset && state == .beforeUpdate ? totalProposedCompensatingOffset : 0)
-				if (layout(at: state).sections.count < 175 && itemPath.section == 75) ||
-					(layout(at: state).sections.count > 175 && itemPath.section == 125)
-				{
-					print("TOP OFFSET: \(layoutRepresentation.effectiveTopOffset)")
-					print("SEC OFFSET: \(section.offsetY)")
-					print("CPO OFFSET: \(compensationOffset(for: state, backward: false))")
-					print("TCO OFFSET: \(totalProposedCompensatingOffset)")
-					print("STATE: \(state)")
-					print("DO: \(doOffset)")
-					print("DELTA: \(delta)")
-					if delta > 0 {
-						()
-					}
-				}
+				let doOffset = (isCollectionViewUpdate && state == .beforeUpdate)
+				let delta = layoutRepresentation.effectiveTopOffset - section.offsetY - (doOffset ? totalProposedCompensatingOffset : 0)
+//				if (layout(at: state).sections.count < 175 && itemPath.section == 74) ||
+//					(layout(at: state).sections.count > 175 && itemPath.section == 124)
+//				{
+//					print("TOP OFFSET: \(layoutRepresentation.effectiveTopOffset)")
+//					print("SEC OFFSET: \(section.offsetY)")
+//					print("CPO OFFSET: \(compensationOffset(for: state, backward: false))")
+//					print("TCO OFFSET: \(totalProposedCompensatingOffset)")
+//					print("BCO OFFSET: \(batchUpdateCompensatingOffset)")
+//					print("STATE: \(state)")
+//					print("DO: \(isCollectionViewUpdate)")
+//					print("ANIMATING: \(isAnimatedBoundsChange)")
+//					print("DELTA: \(delta)")
+//					if delta > 0 {
+//						()
+//					}
+//				}
 				if delta > 0 {
 					/* The section starts above the current offset, we must move the item to have the pinning. */
 					pinningOffset = min(delta, section.height - itemFrame.height)

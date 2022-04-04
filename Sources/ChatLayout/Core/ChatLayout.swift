@@ -679,9 +679,9 @@ public final class ChatLayout: UICollectionViewLayout {
 	
 	/** Notifies the layout object that the contents of the collection view are about to change. */
 	public override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
-		controller.doOffset = true
 		let changeItems = updateItems.compactMap{ ChangeItem(with: $0) }
 		controller.process(changeItems: changeItems)
+		controller.isCollectionViewUpdate = true
 		state = .afterUpdate
 		dontReturnAttributes = false
 		super.prepare(forCollectionViewUpdates: updateItems)
@@ -689,7 +689,7 @@ public final class ChatLayout: UICollectionViewLayout {
 	
 	/** Performs any additional animations or clean up needed during a collection view update. */
 	public override func finalizeCollectionViewUpdates() {
-		controller.doOffset = false
+		controller.isCollectionViewUpdate = false
 		controller.proposedCompensatingOffset = 0
 		
 		if keepContentOffsetAtBottomOnBatchUpdates,
