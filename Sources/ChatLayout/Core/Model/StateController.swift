@@ -266,22 +266,6 @@ final class StateController {
 			case (true, .top):
 				let doOffset = (isCollectionViewUpdate && state == .beforeUpdate)
 				let delta = layoutRepresentation.effectiveTopOffset - section.offsetY - (doOffset ? totalProposedCompensatingOffset : 0)
-//				if (layout(at: state).sections.count < 175 && itemPath.section == 74) ||
-//					(layout(at: state).sections.count > 175 && itemPath.section == 124)
-//				{
-//					print("TOP OFFSET: \(layoutRepresentation.effectiveTopOffset)")
-//					print("SEC OFFSET: \(section.offsetY)")
-//					print("CPO OFFSET: \(compensationOffset(for: state, backward: false))")
-//					print("TCO OFFSET: \(totalProposedCompensatingOffset)")
-//					print("BCO OFFSET: \(batchUpdateCompensatingOffset)")
-//					print("STATE: \(state)")
-//					print("DO: \(isCollectionViewUpdate)")
-//					print("ANIMATING: \(isAnimatedBoundsChange)")
-//					print("DELTA: \(delta)")
-//					if delta > 0 {
-//						()
-//					}
-//				}
 				if delta > 0 {
 					/* The section starts above the current offset, we must move the item to have the pinning. */
 					pinningOffset = min(delta, section.height - itemFrame.height)
