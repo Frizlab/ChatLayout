@@ -248,7 +248,6 @@ public final class ChatLayout: UICollectionViewLayout {
 	 - Parameter edge: The edge of the `UICollectionView`
 	 - Returns: `ChatLayoutPositionSnapshot` */
 	public func getContentOffsetSnapshot(from edge: ChatLayoutPositionSnapshot.Edge) -> ChatLayoutPositionSnapshot? {
-#warning("Pinning is not checked. If we snapshot to a pinned item, this would not mean anything.")
 		guard let collectionView = collectionView else {
 			return nil
 		}
@@ -259,7 +258,8 @@ public final class ChatLayout: UICollectionViewLayout {
 		let layoutAttributes = controller.layoutAttributesForElements(
 			in: visibleBounds.inset(by: insets),
 			state: state,
-			ignoreCache: true
+			ignoreCache: true,
+			allowPinning: false
 		).sorted{ $0.frame.maxY < $1.frame.maxY }
 		
 		switch edge {

@@ -88,7 +88,8 @@ final class StateController {
 		return locationHeight + layoutRepresentation.settings.additionalInsets.bottom
 	}
 	
-	func layoutAttributesForElements(in rect: CGRect, state: ModelState, ignoreCache: Bool = false) -> [ChatLayoutAttributes] {
+	/** Setting `allowPinning` to `false` implies `ignoreCache` is set to `true`. */
+	func layoutAttributesForElements(in rect: CGRect, state: ModelState, ignoreCache: Bool = false, allowPinning: Bool = true) -> [ChatLayoutAttributes] {
 		let predicate: (ChatLayoutAttributes) -> ComparisonResult = { attributes in
 			if attributes.frame.intersects(rect) {
 				return .orderedSame
@@ -99,7 +100,7 @@ final class StateController {
 			return .orderedAscending
 		}
 		
-		if !ignoreCache,
+		if !ignoreCache && allowPinning,
 			let cachedAttributesState = cachedAttributesState,
 			cachedAttributesState.rect.contains(rect)
 		{
@@ -110,9 +111,9 @@ final class StateController {
 				case .beforeUpdate: totalRect = rect.inset(by: UIEdgeInsets(top: -rect.height / 2, left: -rect.width / 2, bottom: -rect.height / 2, right: -rect.width / 2))
 				case  .afterUpdate: totalRect = rect
 			}
-			let attributes = allAttributes(at: state, visibleRect: totalRect)
+			let attributes = allAttributes(at: state, visibleRect: totalRect, allowPinning: allowPinning)
 				.sorted{ $0.frame.minY < $1.frame.minY }
-			if !ignoreCache {
+			if !ignoreCache && allowPinning {
 				cachedAttributesState = (rect: totalRect, attributes: attributes)
 			}
 			let visibleAttributes = rect != totalRect ? attributes.binarySearchRange(predicate: predicate) : attributes
@@ -625,7 +626,7 @@ final class StateController {
 		return contentHeight(at: state).rounded() > visibleBoundsHeight.rounded()
 	}
 	
-	private func allAttributes(at state: ModelState, visibleRect: CGRect? = nil) -> [ChatLayoutAttributes] {
+	private func allAttributes(at state: ModelState, visibleRect: CGRect? = nil, allowPinning: Bool = true) -> [ChatLayoutAttributes] {
 		let layout = self.layout(at: state)
 		
 		if let visibleRect = visibleRect {
@@ -673,7 +674,7 @@ final class StateController {
 			for sectionIndex in 0..<layout.sections.count {
 				let section = layout.sections[sectionIndex]
 				let sectionPath = ItemPath(item: 0, section: sectionIndex)
-				if let (headerFrame, pinned) = itemFrame(for: sectionPath, kind: .header, at: state, isFinal: true),
+				if let (headerFrame, pinned) = itemFrame(for: sectionPath, kind: .header, at: state, isFinal: true, allowPinning: allowPinning),
 					check(rect: headerFrame, isPinned: pinned)
 				{
 					allRects.append((frame: headerFrame, indexPath: sectionPath, kind: .header))
@@ -687,7 +688,7 @@ final class StateController {
 				if traverseState == .notFound, !section.items.isEmpty {
 					func predicate(itemIndex: Int) -> ComparisonResult {
 						let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-						guard let (itemFrame, pinned) = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true) else {
+						guard let (itemFrame, pinned) = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true, allowPinning: allowPinning) else {
 							return .orderedDescending
 						}
 						if itemFrame.intersects(visibleRect) {
@@ -707,7 +708,7 @@ final class StateController {
 						startingIndex = firstMatchingIndex
 						for itemIndex in (0..<firstMatchingIndex).reversed() {
 							let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-							guard let (itemFrame, pinned) = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true) else {
+							guard let (itemFrame, pinned) = itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true, allowPinning: allowPinning) else {
 								continue
 							}
 							guard itemFrame.maxY >= visibleRect.minY else {
@@ -724,7 +725,7 @@ final class StateController {
 				if startingIndex < section.items.count {
 					for itemIndex in startingIndex..<section.items.count {
 						let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-						if let (itemFrame, pinned) = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true),
+						if let (itemFrame, pinned) = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true, allowPinning: allowPinning),
 							check(rect: itemFrame, isPinned: pinned)
 						{
 							if state == .beforeUpdate || isAnimatedBoundsChange {
@@ -735,7 +736,7 @@ final class StateController {
 											let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate),
 											let item = self.item(for: initialIndexPath, kind: .cell, at: .beforeUpdate),
 											item.calculatedOnce == true,
-											let itemFrame = self.itemFrame(for: initialIndexPath, kind: .cell, at: .beforeUpdate, isFinal: false)?.frame,
+											let itemFrame = self.itemFrame(for: initialIndexPath, kind: .cell, at: .beforeUpdate, isFinal: false, allowPinning: allowPinning)?.frame,
 											itemFrame.intersects(layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: -totalProposedCompensatingOffset))
 									else {
 										return false
@@ -745,7 +746,7 @@ final class StateController {
 								var itemWillBeVisible: Bool {
 									let offsetVisibleBounds = layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: proposedCompensatingOffset + batchUpdateCompensatingOffset)
 									if insertedIndexes.contains(itemPath.indexPath),
-										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true)?.frame,
+										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true, allowPinning: allowPinning)?.frame,
 										itemFrame.intersects(offsetVisibleBounds)
 									{
 										return true
@@ -753,7 +754,7 @@ final class StateController {
 									if let itemIdentifier = self.itemIdentifier(for: itemPath, kind: .cell, at: .afterUpdate),
 										let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate)?.indexPath,
 										movedIndexes.contains(initialIndexPath) || reloadedIndexes.contains(initialIndexPath),
-										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true)?.frame,
+										let itemFrame = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true, allowPinning: allowPinning)?.frame,
 										itemFrame.intersects(offsetVisibleBounds)
 									{
 										return true
@@ -771,7 +772,7 @@ final class StateController {
 					}
 				}
 				
-				if let (footerFrame, pinned) = itemFrame(for: sectionPath, kind: .footer, at: state, isFinal: true),
+				if let (footerFrame, pinned) = itemFrame(for: sectionPath, kind: .footer, at: state, isFinal: true, allowPinning: allowPinning),
 					check(rect: footerFrame, isPinned: pinned)
 				{
 					allRects.append((frame: footerFrame, indexPath: sectionPath, kind: .footer))
