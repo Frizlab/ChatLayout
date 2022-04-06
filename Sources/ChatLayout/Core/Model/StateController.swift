@@ -65,6 +65,7 @@ final class StateController {
 	private(set) var movedSectionsIndexes: Set<Int> = []
 	
 	private var cachedAttributesState: (rect: CGRect, attributes: [ChatLayoutAttributes])?
+	/** If I understand upstream and his blog post correctly, this is used to be able to return the _same_ attribute for a given item in order to avoid some animation glitches. */
 	private var cachedAttributeObjects = [ModelState: [ItemKind: [ItemPath: ChatLayoutAttributes]]]()
 	
 	private unowned var layoutRepresentation: ChatLayoutRepresentation
@@ -126,19 +127,19 @@ final class StateController {
 	}
 	
 	func resetCachedAttributeObjects() {
-		ModelState.allCases.forEach { state in
+		ModelState.allCases.forEach{ state in
 			resetCachedAttributeObjects(at: state)
 		}
 	}
 	
 	private func resetCachedAttributeObjects(at state: ModelState) {
 		cachedAttributeObjects[state] = [:]
-		ItemKind.allCases.forEach { kind in
+		ItemKind.allCases.forEach{ kind in
 			cachedAttributeObjects[state]?[kind] = [:]
 		}
 	}
 	
-	func itemAttributes(for itemPath: ItemPath, kind: ItemKind, predefinedFrame: CGRect? = nil, at state: ModelState) -> ChatLayoutAttributes? {
+	func itemAttributes(for itemPath: ItemPath, kind: ItemKind, predefinedFrameAndPinned: (frame: CGRect, pinned: Bool)? = nil, at state: ModelState) -> ChatLayoutAttributes? {
 		let attributes: ChatLayoutAttributes
 		let itemIndexPath = itemPath.indexPath
 		switch kind {
@@ -149,7 +150,7 @@ final class StateController {
 					/* This occurs when getting layout attributes for initial / final animations. */
 					return nil
 				}
-				guard let headerFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true)?.frame,
+				guard let (headerFrame, headerPinned) = predefinedFrameAndPinned ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true),
 						let item = item(for: itemPath, kind: kind, at: state)
 				else {
 					return nil
@@ -164,6 +165,7 @@ final class StateController {
 				attributes.id = item.id
 #endif
 				attributes.frame = headerFrame
+				attributes.pinned = headerPinned
 				attributes.indexPath = itemIndexPath
 				attributes.zIndex = 10
 				attributes.alignment = item.alignment
@@ -175,7 +177,7 @@ final class StateController {
 					/* This occurs when getting layout attributes for initial / final animations. */
 					return nil
 				}
-				guard let footerFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true)?.frame,
+				guard let (footerFrame, footerPinned) = predefinedFrameAndPinned ?? itemFrame(for: itemPath, kind: kind, at: state, isFinal: true),
 						let item = item(for: itemPath, kind: kind, at: state)
 				else {
 					return nil
@@ -190,6 +192,7 @@ final class StateController {
 				attributes.id = item.id
 #endif
 				attributes.frame = footerFrame
+				attributes.pinned = footerPinned
 				attributes.indexPath = itemIndexPath
 				attributes.zIndex = 10
 				attributes.alignment = item.alignment
@@ -201,7 +204,7 @@ final class StateController {
 					/* This occurs when getting layout attributes for initial / final animations. */
 					return nil
 				}
-				guard let itemFrame = predefinedFrame ?? itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true)?.frame,
+				guard let (itemFrame, itemPinned) = predefinedFrameAndPinned ?? itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true),
 						let item = item(for: itemPath, kind: kind, at: state)
 				else {
 					return nil
@@ -216,6 +219,7 @@ final class StateController {
 				attributes.id = item.id
 #endif
 				attributes.frame = itemFrame
+				attributes.pinned = itemPinned
 				attributes.indexPath = itemIndexPath
 				attributes.zIndex = 0
 				attributes.alignment = item.alignment
@@ -638,9 +642,9 @@ final class StateController {
 			
 			var traverseState: TraverseState = .notFound
 			
-			/* We need to know if the rect is coming from a pinned item because if it is, */
-			func check(rect: CGRect, isPinned: Bool) -> Bool {
-				guard !isPinned else {
+			func check(_ rectAndPinned: (frame: CGRect, pinned: Bool)) -> Bool {
+				let (rect, pinned) = rectAndPinned
+				guard !pinned else {
 					return visibleRect.intersects(rect)
 				}
 				
@@ -668,16 +672,16 @@ final class StateController {
 				}
 			}
 			
-			var allRects = [(frame: CGRect, indexPath: ItemPath, kind: ItemKind)]()
+			var allRects = [(frameAndPinned: (frame: CGRect, pinned: Bool), indexPath: ItemPath, kind: ItemKind)]()
 			/* I dont think there can be more then a 200 elements on the screen simultaneously. */
 			allRects.reserveCapacity(200)
 			for sectionIndex in 0..<layout.sections.count {
 				let section = layout.sections[sectionIndex]
 				let sectionPath = ItemPath(item: 0, section: sectionIndex)
-				if let (headerFrame, pinned) = itemFrame(for: sectionPath, kind: .header, at: state, isFinal: true, allowPinning: allowPinning),
-					check(rect: headerFrame, isPinned: pinned)
+				if let headerFrameAndPinned = itemFrame(for: sectionPath, kind: .header, at: state, isFinal: true, allowPinning: allowPinning),
+					check(headerFrameAndPinned)
 				{
-					allRects.append((frame: headerFrame, indexPath: sectionPath, kind: .header))
+					allRects.append((frameAndPinned: headerFrameAndPinned, indexPath: sectionPath, kind: .header))
 				}
 				guard traverseState != .done else {
 					break
@@ -725,11 +729,11 @@ final class StateController {
 				if startingIndex < section.items.count {
 					for itemIndex in startingIndex..<section.items.count {
 						let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-						if let (itemFrame, pinned) = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true, allowPinning: allowPinning),
-							check(rect: itemFrame, isPinned: pinned)
+						if let itemFrameAndPinned = self.itemFrame(for: itemPath, kind: .cell, at: state, isFinal: true, allowPinning: allowPinning),
+							check(itemFrameAndPinned)
 						{
 							if state == .beforeUpdate || isAnimatedBoundsChange {
-								allRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))
+								allRects.append((frameAndPinned: itemFrameAndPinned, indexPath: itemPath, kind: .cell))
 							} else {
 								var itemWasVisibleBefore: Bool {
 									guard let itemIdentifier = self.itemIdentifier(for: itemPath, kind: .cell, at: .afterUpdate),
@@ -762,7 +766,7 @@ final class StateController {
 									return false
 								}
 								if itemWillBeVisible || itemWasVisibleBefore {
-									allRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))
+									allRects.append((frameAndPinned: itemFrameAndPinned, indexPath: itemPath, kind: .cell))
 								}
 							}
 						}
@@ -772,15 +776,15 @@ final class StateController {
 					}
 				}
 				
-				if let (footerFrame, pinned) = itemFrame(for: sectionPath, kind: .footer, at: state, isFinal: true, allowPinning: allowPinning),
-					check(rect: footerFrame, isPinned: pinned)
+				if let footerFrameAndPinned = itemFrame(for: sectionPath, kind: .footer, at: state, isFinal: true, allowPinning: allowPinning),
+					check(footerFrameAndPinned)
 				{
-					allRects.append((frame: footerFrame, indexPath: sectionPath, kind: .footer))
+					allRects.append((frameAndPinned: footerFrameAndPinned, indexPath: sectionPath, kind: .footer))
 				}
 			}
 			
-			return allRects.compactMap{ frame, path, kind -> ChatLayoutAttributes? in
-				return self.itemAttributes(for: path, kind: kind, predefinedFrame: frame, at: state)
+			return allRects.compactMap{ frameAndPinned, path, kind -> ChatLayoutAttributes? in
+				return self.itemAttributes(for: path, kind: kind, predefinedFrameAndPinned: frameAndPinned, at: state)
 			}
 		} else {
 			/* Debug purposes only. */

@@ -33,6 +33,8 @@ public final class ChatLayoutAttributes: UICollectionViewLayoutAttributes {
 	/** `ChatLayout`s visible bounds size excluding `adjustedContentInsets` and `additionalInsets`. Added for convenience. */
 	public internal(set) var layoutFrame: CGRect = .zero
 	
+	public internal(set) var pinned: Bool = false
+	
 #if DEBUG
 	var id: UUID?
 #endif
