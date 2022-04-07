@@ -13,7 +13,7 @@ import UIKit
 
 
 
-class MockCollectionLayout: ChatLayoutRepresentation, ChatLayoutDelegate {
+class MockCollectionLayout : ChatLayoutRepresentation, ChatLayoutDelegate {
 	
 	var numberOfItemsInSection: [Int: Int] = [0: 100, 1: 100, 2: 100]
 	var shouldPresentHeaderAtSection: [Int: Bool] = [0: true, 1: true, 2: true]
@@ -41,6 +41,7 @@ class MockCollectionLayout: ChatLayoutRepresentation, ChatLayoutDelegate {
 			height: controller.contentHeight(at: state) - settings.additionalInsets.top - settings.additionalInsets.bottom
 		)
 	}
+	var effectiveTopOffset: CGFloat = 0
 	
 	let adjustedContentInset: UIEdgeInsets = .zero
 	
@@ -51,7 +52,7 @@ class MockCollectionLayout: ChatLayoutRepresentation, ChatLayoutDelegate {
 	}
 	
 	func configuration(for element: ItemKind, at itemPath: ItemPath) -> ItemModel.Configuration {
-		return .init(alignment: .fullWidth, preferredSize: settings.estimatedItemSize!, calculatedSize: settings.estimatedItemSize!)
+		return .init(preferredSize: settings.estimatedItemSize!, calculatedSize: settings.estimatedItemSize!, alignment: .fullWidth, pinning: .none)
 	}
 	
 	func shouldPresentHeader(at sectionIndex: Int) -> Bool {
