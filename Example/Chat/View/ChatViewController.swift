@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // ChatViewController.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import DifferenceKit
 import Foundation
 import FPSCounter
@@ -50,7 +50,7 @@ final class ChatViewController: UIViewController {
     private let editNotifier: EditNotifier
     private let swipeNotifier: SwipeNotifier
     private var collectionView: UICollectionView!
-    private var chatLayout = ChatLayout()
+    private var sTableLayout = STableLayout()
     private let inputBarView = InputBarAccessoryView()
     private let chatController: ChatController
     private let dataSource: ChatCollectionDataSource
@@ -117,16 +117,16 @@ final class ChatViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Show Keyboard", style: .plain, target: self, action: #selector(ChatViewController.showHideKeyboard))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(ChatViewController.setEditNotEdit))
 
-        chatLayout.settings.interItemSpacing = 8
-        chatLayout.settings.interSectionSpacing = 8
-        chatLayout.settings.additionalInsets = UIEdgeInsets(top: 8, left: 5, bottom: 8, right: 5)
-        chatLayout.keepContentOffsetAtBottomOnBatchUpdates = true
+        sTableLayout.settings.interItemSpacing = 8
+        sTableLayout.settings.interSectionSpacing = 8
+        sTableLayout.settings.additionalInsets = UIEdgeInsets(top: 8, left: 5, bottom: 8, right: 5)
+        sTableLayout.keepContentOffsetAtBottomOnBatchUpdates = true
 
-        collectionView = UICollectionView(frame: view.frame, collectionViewLayout: chatLayout)
+        collectionView = UICollectionView(frame: view.frame, collectionViewLayout: sTableLayout)
         view.addSubview(collectionView)
         collectionView.alwaysBounceVertical = true
         collectionView.dataSource = dataSource
-        chatLayout.delegate = dataSource
+        sTableLayout.delegate = dataSource
         collectionView.delegate = self
         collectionView.keyboardDismissMode = .interactive
 
@@ -173,7 +173,7 @@ final class ChatViewController: UIViewController {
             return
         }
         currentInterfaceActions.options.insert(.changingFrameSize)
-        let positionSnapshot = chatLayout.getContentOffsetSnapshot(from: .bottom)
+        let positionSnapshot = sTableLayout.getContentOffsetSnapshot(from: .bottom)
         collectionView.collectionViewLayout.invalidateLayout()
         collectionView.setNeedsLayout()
         coordinator.animate(alongsideTransition: { _ in
@@ -184,9 +184,9 @@ final class ChatViewController: UIViewController {
             if let positionSnapshot = positionSnapshot,
                !self.isUserInitiatedScrolling {
                 // As contentInsets may change when size transition has already started. For example, `UINavigationBar` height may change
-                // to compact and back. `ChatLayout` may not properly predict the final position of the element. So we try
+                // to compact and back. `STableLayout` may not properly predict the final position of the element. So we try
                 // to restore it after the rotation manually.
-                self.chatLayout.restoreContentOffset(with: positionSnapshot)
+                self.sTableLayout.restoreContentOffset(with: positionSnapshot)
             }
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.currentInterfaceActions.options.remove(.changingFrameSize)
@@ -208,15 +208,15 @@ final class ChatViewController: UIViewController {
         isEditing = !isEditing
         editNotifier.setIsEditing(isEditing, duration: .animated(duration: 0.25))
         navigationItem.rightBarButtonItem?.title = isEditing ? "Done" : "Edit"
-        chatLayout.invalidateLayout()
+        sTableLayout.invalidateLayout()
     }
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         swipeNotifier.setAccessoryOffset(UIEdgeInsets(top: view.safeAreaInsets.top,
-                                                      left: view.safeAreaInsets.left + chatLayout.settings.additionalInsets.left,
+                                                      left: view.safeAreaInsets.left + sTableLayout.settings.additionalInsets.left,
                                                       bottom: view.safeAreaInsets.bottom,
-                                                      right: view.safeAreaInsets.right + chatLayout.settings.additionalInsets.right))
+                                                      right: view.safeAreaInsets.right + sTableLayout.settings.additionalInsets.right))
     }
 
     // Apple doesnt return sometimes inputBarView back to the app. This is an attempt to fix that
@@ -295,7 +295,7 @@ extension ChatViewController: UIScrollViewDelegate {
     func scrollToBottom(completion: (() -> Void)? = nil) {
         // I ask content size from the layout because on IOs 12 collection view contains not updated one
         let contentOffsetAtBottom = CGPoint(x: collectionView.contentOffset.x,
-                                            y: chatLayout.collectionViewContentSize.height - collectionView.frame.height + collectionView.adjustedContentInset.bottom)
+                                            y: sTableLayout.collectionViewContentSize.height - collectionView.frame.height + collectionView.adjustedContentInset.bottom)
 
         guard contentOffsetAtBottom.y > collectionView.contentOffset.y else {
             completion?()
@@ -304,7 +304,7 @@ extension ChatViewController: UIScrollViewDelegate {
 
         let initialOffset = collectionView.contentOffset.y
         let delta = contentOffsetAtBottom.y - initialOffset
-        if abs(delta) > chatLayout.visibleBounds.height {
+        if abs(delta) > sTableLayout.visibleBounds.height {
             // See: https://dasdom.dev/posts/scrolling-a-collection-view-with-custom-duration/
             animator = ManualAnimator()
             animator?.animate(duration: TimeInterval(0.25), curve: .easeInOut) { [weak self] percentage in
@@ -314,8 +314,8 @@ extension ChatViewController: UIScrollViewDelegate {
                 self.collectionView.contentOffset = CGPoint(x: self.collectionView.contentOffset.x, y: initialOffset + (delta * percentage))
                 if percentage == 1.0 {
                     self.animator = nil
-                    let positionSnapshot = ChatLayoutPositionSnapshot(indexPath: IndexPath(item: 0, section: 0), kind: .footer, edge: .bottom)
-                    self.chatLayout.restoreContentOffset(with: positionSnapshot)
+                    let positionSnapshot = STableLayoutPositionSnapshot(indexPath: IndexPath(item: 0, section: 0), kind: .footer, edge: .bottom)
+                    self.sTableLayout.restoreContentOffset(with: positionSnapshot)
                     self.currentInterfaceActions.options.remove(.scrollingToBottom)
                     completion?()
                 }
@@ -464,10 +464,10 @@ extension ChatViewController: ChatControllerDelegate {
                                       return false
                                   },
                                   onInterruptedReload: {
-                                      let positionSnapshot = ChatLayoutPositionSnapshot(indexPath: IndexPath(item: 0, section: sections.count - 1), kind: .footer, edge: .bottom)
+                                      let positionSnapshot = STableLayoutPositionSnapshot(indexPath: IndexPath(item: 0, section: sections.count - 1), kind: .footer, edge: .bottom)
                                       self.collectionView.reloadData()
                                       // We want so that user on reload appeared at the very bottom of the layout
-                                      self.chatLayout.restoreContentOffset(with: positionSnapshot)
+                                      self.sTableLayout.restoreContentOffset(with: positionSnapshot)
                                   },
                                   completion: { _ in
                                       DispatchQueue.main.async {
@@ -599,7 +599,7 @@ extension ChatViewController: KeyboardListenerDelegate {
         let newBottomInset = collectionView.frame.minY + collectionView.frame.size.height - keyboardFrame.minY - collectionView.safeAreaInsets.bottom
         if newBottomInset > 0,
            collectionView.contentInset.bottom != newBottomInset {
-            let positionSnapshot = chatLayout.getContentOffsetSnapshot(from: .bottom)
+            let positionSnapshot = sTableLayout.getContentOffsetSnapshot(from: .bottom)
 
             // Blocks possible updates when keyboard is being hidden interactively
             currentInterfaceActions.options.insert(.changingContentInsets)
@@ -610,7 +610,7 @@ extension ChatViewController: KeyboardListenerDelegate {
                 }, completion: nil)
 
                 if let positionSnapshot = positionSnapshot, !self.isUserInitiatedScrolling {
-                    self.chatLayout.restoreContentOffset(with: positionSnapshot)
+                    self.sTableLayout.restoreContentOffset(with: positionSnapshot)
                 }
                 if #available(iOS 13.0, *) {
                 } else {

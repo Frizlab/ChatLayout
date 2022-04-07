@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // BezierMaskedView.swift
 // https://github.com/ekazaev/ChatLayout
 //

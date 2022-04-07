@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  ChatLayout Example
+//  STableLayout Example
 //
 //  Created by François Lamboley on 29/03/2022.
 //

@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // ImageController.swift
 // https://github.com/ekazaev/ChatLayout
 //

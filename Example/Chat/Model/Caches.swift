@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // Caches.swift
 // https://github.com/ekazaev/ChatLayout
 //

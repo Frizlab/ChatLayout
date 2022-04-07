@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // EditingAccessoryController.swift
 // https://github.com/ekazaev/ChatLayout
 //

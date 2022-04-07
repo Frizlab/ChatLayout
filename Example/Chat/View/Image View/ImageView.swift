@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // ImageView.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import Foundation
 import UIKit
 
@@ -41,7 +41,7 @@ final class ImageView: UIView, ContainerCollectionViewCellDelegate {
         imageView.image = nil
     }
 
-    func apply(_ layoutAttributes: ChatLayoutAttributes) {
+    func apply(_ layoutAttributes: STableLayoutAttributes) {
         viewPortWidth = layoutAttributes.layoutFrame.width
         setupSize()
     }
@@ -50,7 +50,7 @@ final class ImageView: UIView, ContainerCollectionViewCellDelegate {
     // NB: Keep in mind that the cell itself is still using autolayout to layout it content. If you really want to speed up the
     // performance, You must layout the entire!!! `UICollectionCell` manually or using the tools
     // like [LayoutKit](https://github.com/linkedin/LayoutKit)
-//    func preferredLayoutAttributesFitting(_ layoutAttributes: ChatLayoutAttributes) -> ChatLayoutAttributes? {
+//    func preferredLayoutAttributesFitting(_ layoutAttributes: STableLayoutAttributes) -> STableLayoutAttributes? {
 //        viewPortWidth = layoutAttributes.layoutFrame.width
 //        switch controller.state {
 //        case .loading:

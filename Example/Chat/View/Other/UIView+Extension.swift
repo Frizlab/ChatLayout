@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // UIView+Extension.swift
 // https://github.com/ekazaev/ChatLayout
 //

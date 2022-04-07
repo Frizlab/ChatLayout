@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // DefaultChatController.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import Foundation
 
 final class DefaultChatController: ChatController {

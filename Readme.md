@@ -2,12 +2,12 @@
 <a href="https://websummit.com"><img src="https://habrastorage.org/webt/jh/an/e-/jhane-_nukqskoq49iqidftm0-4.png" alt="Websummit"/></a>
 </p>
 
-# ChatLayout
+# STableLayout
 
 [![CI Status](https://travis-ci.org/ekazaev/ChatLayout.svg?branch=master&style=flat)](https://travis-ci.org/github/ekazaev/ChatLayout)
 [![Release](https://img.shields.io/github/release/ekazaev/ChatLayout.svg?style=flat&color=darkcyan)](https://github.com/ekazaev/ChatLayout/releases)
-[![Version](https://img.shields.io/cocoapods/v/ChatLayout.svg?style=flat)](https://cocoapods.org/pods/ChatLayout)
-[![Documentation](https://ekazaev.github.io/ChatLayout/badge.svg)](https://ekazaev.github.io/ChatLayout/)
+[![Version](https://img.shields.io/cocoapods/v/STableLayout.svg?style=flat)](https://cocoapods.org/pods/STableLayout)
+[![Documentation](https://ekazaev.github.io/STableLayout/badge.svg)](https://ekazaev.github.io/STableLayout/)
 [![Codecov](https://codecov.io/gh/ekazaev/ChatLayout/branch/master/graph/badge.svg)](https://codecov.io/gh/ekazaev/ChatLayout)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/b97c279a50984376ab2649f5a7d09e69)](https://www.codacy.com/gh/ekazaev/ChatLayout/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ekazaev/ChatLayout&amp;utm_campaign=Badge_Grade)
 [![Swift Package Manager](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg?style=flat)](https://github.com/apple/swift-package-manager)
@@ -23,7 +23,7 @@
 
 - [About](#about)
 - [Features](#features)
-    - [What ChatLayout doesn't provide (And why it is good)](#what-chatlayout-doesnt-provide-and-why-it-is-good)
+    - [What STableLayout doesn't provide (And why it is good)](#what-chatlayout-doesnt-provide-and-why-it-is-good)
 - [Requirements](#requirements)
 - [Example](#example)
 - [Installation](#installation)
@@ -39,7 +39,7 @@
 
 ## About
 
-`ChatLayout` is an alternative solution to [MessageKit](https://github.com/MessageKit/MessageKit). It uses custom 
+`STableLayout` is an alternative solution to [MessageKit](https://github.com/MessageKit/MessageKit). It uses custom 
 `UICollectionViewLayout` to provide you full control over the presentation as well as all the tools available in 
 `UICollectionView`.
 
@@ -60,37 +60,37 @@
 ![](https://habrastorage.org/webt/t9/b7/4r/t9b74rdyrkf8lszjuhj_vrbp7-s.gif)
 ![](https://habrastorage.org/webt/nv/vr/js/nvvrjsqk0fzutq0y-uubjewyqjm.gif)
 
-### What ChatLayout doesn't provide (And why it is good)
+### What STableLayout doesn't provide (And why it is good)
 
-`ChatLayout` is the custom `UICollectionViewLayout`, so:
+`STableLayout` is the custom `UICollectionViewLayout`, so:
 
 - You don't have to extend or override any custom `UIViewController` or `UICollectionView`. You need to instantiate them 
 yourself and use them the way you like. 
 
-- `ChatLayout` does not rely on modified `UICollectionViewFlowLayout` nor does it rotate your `UICollectionView` upside-down. 
+- `STableLayout` does not rely on modified `UICollectionViewFlowLayout` nor does it rotate your `UICollectionView` upside-down. 
 This means you can use your views as if they would be regular cells within `UICollectionView`. You can benefit from using the 
 default `UIKit` implementations of `adjustedContextInsets` (and others) because your view controller is a normal view 
 controller without any hacks or tricks.
 
-- `ChatLayout` doesn't require you to calculate all the cell sizes before it renders them on the screen. You can fully use
-auto-layout constraints and rely on the fact that the correct size will be calculated in the runtime. However, `ChatLayout` 
+- `STableLayout` doesn't require you to calculate all the cell sizes before it renders them on the screen. You can fully use
+auto-layout constraints and rely on the fact that the correct size will be calculated in the runtime. However, `STableLayout` 
 as any other `UICollectionViewLayout` will benefit from you providing the estimated sizes of your cells as it will allow you 
 to get better performance. 
 
-- `ChatLayout` doesn't enforce you to use any specific data model. You can store your messages and update `UICollectionView`
+- `STableLayout` doesn't enforce you to use any specific data model. You can store your messages and update `UICollectionView`
 the way you like. The only thing you need is to respect the natural boundaries that `UICollectionView` have and correctly
 implement `UICollectionViewDataSource`. The Example app uses [DifferenceKit](https://github.com/ra1028/DifferenceKit) to 
 process changes in the data model.
 
-- `ChatLayout` doesn't enforce you to use any specific `UIView`s to create your collection cells. You can create them the way 
+- `STableLayout` doesn't enforce you to use any specific `UIView`s to create your collection cells. You can create them the way 
 you like. It can be any `UICollectionViewCell` or `UICollectionReusableView`. There are some generic `UIView`s bundled with
 the library that may help you to build them faster. However, you do not have to use them. 
 
-- `ChatLayout` doesn't handle the keyboard appearance behavior. You have to implement
+- `STableLayout` doesn't handle the keyboard appearance behavior. You have to implement
 that yourself from scratch or use the library you are already using in your project. It gives you full control over the 
 keyboard presentation. The only thing you have to do is to update the `contentInsets` of your `UICollectionView`.
 
-- `ChatLayout` doesn't provide you any input control. You can use any one you like and customise it the way you like. 
+- `STableLayout` doesn't provide you any input control. You can use any one you like and customise it the way you like. 
 The Example app for instance uses [InputBarAccessoryView](https://github.com/nathantannar4/InputBarAccessoryView).
 
 ## Example
@@ -99,15 +99,15 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Installation
 
-`ChatLayout` is available through [CocoaPods](https://cocoapods.org), [Carthage](https://github.com/Carthage/Carthage) 
+`STableLayout` is available through [CocoaPods](https://cocoapods.org), [Carthage](https://github.com/Carthage/Carthage) 
 and [SwiftPM](https://github.com/apple/swift-package-manager). See the `Example` app for the usage details.
 
-If you are using cocoapods you can install the whole package using `pod 'ChatLayout'`. If you do not need the additional
-components provided, you can install only the layout itself using `pod 'ChatLayout/Core'`
+If you are using cocoapods you can install the whole package using `pod 'STableLayout'`. If you do not need the additional
+components provided, you can install only the layout itself using `pod 'STableLayout/Core'`
 
 ## Contributing
 
-`ChatLayout` is in active development, and we welcome your contributions.
+`STableLayout` is in active development, and we welcome your contributions.
 
 If you’d like to contribute to this repo, please
 read [the contribution guidelines](https://github.com/ekazaev/route-composer/blob/master/CONTRIBUTING.md).
@@ -118,7 +118,7 @@ read [the contribution guidelines](https://github.com/ekazaev/route-composer/blo
 
 ### About `UICollectionViewDiffableDataSource`
 
-`ChatLayout` can process any update commands that you send to your `UICollectionView`, so you can use 
+`STableLayout` can process any update commands that you send to your `UICollectionView`, so you can use 
 `UICollectionViewDiffableDataSource` as well. But you have to keep in mind that `UICollectionViewDiffableDataSource` 
 does not support the reloading of cells out of the box if you are relying on the `Hashable` protocol implementation.
 It will delete the changed cell and insert the new version of said cell. That may lead to strange animations on 
@@ -134,33 +134,33 @@ only after switches to `UICollectionReusableView`s. You will most likely face so
 
 ### About Texture
 
-`ChatLayout` can be used together with [Texture](https://github.com/TextureGroup/Texture) to improve the auto-layout performance. 
+`STableLayout` can be used together with [Texture](https://github.com/TextureGroup/Texture) to improve the auto-layout performance. 
 But keep in mind that it's default wrapper is hardcoded to work exclusively with `UICollectionViewFlowLayout`. 
 [See issue](https://github.com/TextureGroup/Texture/issues/1959).
-You will have to implement `ChatLayoutDelegate` yourself and propagate the node size manually.
+You will have to implement `STableLayoutDelegate` yourself and propagate the node size manually.
 
 ### About animation
 
 If you see a strange or unexpected animation during the updates, check your data model and **the commands you send to the
 `UICollectionView`'s `performBatchUpdates`**. Especialy if you are using some diffing algorithms like [DifferenceKit](https://github.com/ra1028/DifferenceKit).
 It is very possible that you are sending delete/insert commands when you expect to see reload. The easiest way to check it is by adding
-`print("\(updateItems)")` into `ChatLayout.prepare(forCollectionViewUpdates:)` method. `ChatLayout` doesn't know what you expected to see. 
+`print("\(updateItems)")` into `STableLayout.prepare(forCollectionViewUpdates:)` method. `STableLayout` doesn't know what you expected to see. 
 It just processes your changes according to the commands it has received.
 
 ## License
 
-`ChatLayout` is distributed under [the MIT license](https://github.com/ekazaev/ChatLayout/blob/master/LICENSE).
+`STableLayout` is distributed under [the MIT license](https://github.com/ekazaev/ChatLayout/blob/master/LICENSE).
 
-`ChatLayout` is provided for your use, free-of-charge, on an as-is basis. We make no guarantees, promises or
+`STableLayout` is provided for your use, free-of-charge, on an as-is basis. We make no guarantees, promises or
 apologies. *Caveat developer.*
 
 ## Articles
 
 English:
-- [My COVID-19 lockdown project or how I started to dig into a custom UICollectionViewLayout to get a ChatLayout](https://eugenenekhoroshiy.medium.com/my-covid-19-lockdown-project-or-how-i-started-to-dig-into-a-custom-uicollectionviewlayout-to-get-a-d053e1ad3aa0)
+- [My COVID-19 lockdown project or how I started to dig into a custom UICollectionViewLayout to get a STableLayout](https://eugenenekhoroshiy.medium.com/my-covid-19-lockdown-project-or-how-i-started-to-dig-into-a-custom-uicollectionviewlayout-to-get-a-d053e1ad3aa0)
 
 Russian:
-  - [Мой Covid-19 lockdown проект, или, как я полез в кастомный UICollectionViewLayout и получил ChatLayout](https://habr.com/ru/post/523492/)
+  - [Мой Covid-19 lockdown проект, или, как я полез в кастомный UICollectionViewLayout и получил STableLayout](https://habr.com/ru/post/523492/)
 
 ## Author
   

@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // PersistentDataCache.swift
 // https://github.com/ekazaev/ChatLayout
 //

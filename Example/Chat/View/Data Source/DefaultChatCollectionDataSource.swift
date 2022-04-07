@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // DefaultChatCollectionDataSource.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import Foundation
 import UIKit
 
@@ -60,7 +60,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         }
     }
 
-    private func createTextCell(collectionView: UICollectionView, messageId: UUID, indexPath: IndexPath, text: String, date: Date, alignment: ChatItemAlignment, user: User, bubbleType: Cell.BubbleType, status: MessageStatus, messageType: MessageType) -> UICollectionViewCell {
+    private func createTextCell(collectionView: UICollectionView, messageId: UUID, indexPath: IndexPath, text: String, date: Date, alignment: STableItemAlignment, user: User, bubbleType: Cell.BubbleType, status: MessageStatus, messageType: MessageType) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TextMessageCollectionCell.reuseIdentifier, for: indexPath) as! TextMessageCollectionCell
         setupMessageContainerView(cell.customView, messageId: messageId, alignment: alignment)
         setupMainMessageView(cell.customView.customView, user: user, alignment: alignment, bubble: bubbleType, status: status)
@@ -79,7 +79,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
     }
 
     @available(iOS 13, *)
-    private func createURLCell(collectionView: UICollectionView, messageId: UUID, indexPath: IndexPath, url: URL, date: Date, alignment: ChatItemAlignment, user: User, bubbleType: Cell.BubbleType, status: MessageStatus, messageType: MessageType) -> UICollectionViewCell {
+    private func createURLCell(collectionView: UICollectionView, messageId: UUID, indexPath: IndexPath, url: URL, date: Date, alignment: STableItemAlignment, user: User, bubbleType: Cell.BubbleType, status: MessageStatus, messageType: MessageType) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: URLCollectionCell.reuseIdentifier, for: indexPath) as! URLCollectionCell
         setupMessageContainerView(cell.customView, messageId: messageId, alignment: alignment)
         setupMainMessageView(cell.customView.customView, user: user, alignment: alignment, bubble: bubbleType, status: status)
@@ -99,7 +99,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         return cell
     }
 
-    private func createImageCell(collectionView: UICollectionView, messageId: UUID, indexPath: IndexPath, alignment: ChatItemAlignment, user: User, source: ImageMessageSource, date: Date, bubbleType: Cell.BubbleType, status: MessageStatus, messageType: MessageType) -> ImageCollectionCell {
+    private func createImageCell(collectionView: UICollectionView, messageId: UUID, indexPath: IndexPath, alignment: STableItemAlignment, user: User, source: ImageMessageSource, date: Date, bubbleType: Cell.BubbleType, status: MessageStatus, messageType: MessageType) -> ImageCollectionCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCollectionCell.reuseIdentifier, for: indexPath) as! ImageCollectionCell
 
         setupMessageContainerView(cell.customView, messageId: messageId, alignment: alignment)
@@ -122,7 +122,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
 
     private func createTypingIndicatorCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TypingIndicatorCollectionCell.reuseIdentifier, for: indexPath) as! TypingIndicatorCollectionCell
-        let alignment = ChatItemAlignment.leading
+        let alignment = STableItemAlignment.leading
         cell.customView.alignment = alignment
         let bubbleView = cell.customView.customView.customView
         let controller = TextMessageController(text: "Typing...",
@@ -136,10 +136,10 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         return cell
     }
 
-    private func createGroupTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: ChatItemAlignment, title: String) -> TitleCollectionCell {
+    private func createGroupTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: STableItemAlignment, title: String) -> TitleCollectionCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TitleCollectionCell.reuseIdentifier, for: indexPath) as! TitleCollectionCell
         cell.customView.text = title
-        cell.customView.preferredMaxLayoutWidth = (collectionView.collectionViewLayout as? ChatLayout)?.layoutFrame.width ?? collectionView.frame.width
+        cell.customView.preferredMaxLayoutWidth = (collectionView.collectionViewLayout as? STableLayout)?.layoutFrame.width ?? collectionView.frame.width
         cell.customView.textColor = .gray
         cell.customView.numberOfLines = 0
         cell.customView.font = .preferredFont(forTextStyle: .caption2)
@@ -147,9 +147,9 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         return cell
     }
 
-    private func createDateTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: ChatItemAlignment, title: String) -> TitleCollectionCell {
+    private func createDateTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: STableItemAlignment, title: String) -> TitleCollectionCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TitleCollectionCell.reuseIdentifier, for: indexPath) as! TitleCollectionCell
-        cell.customView.preferredMaxLayoutWidth = (collectionView.collectionViewLayout as? ChatLayout)?.layoutFrame.width ?? collectionView.frame.width
+        cell.customView.preferredMaxLayoutWidth = (collectionView.collectionViewLayout as? STableLayout)?.layoutFrame.width ?? collectionView.frame.width
         cell.customView.text = title
         cell.customView.textColor = .gray
         cell.customView.numberOfLines = 0
@@ -158,7 +158,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         return cell
     }
 
-    private func setupMessageContainerView<CustomView>(_ messageContainerView: MessageContainerView<EditingAccessoryView, CustomView>, messageId: UUID, alignment: ChatItemAlignment) {
+    private func setupMessageContainerView<CustomView>(_ messageContainerView: MessageContainerView<EditingAccessoryView, CustomView>, messageId: UUID, alignment: STableItemAlignment) {
         messageContainerView.alignment = alignment
         if let accessoryView = messageContainerView.accessoryView {
             editNotifier.add(delegate: accessoryView)
@@ -173,7 +173,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
 
     private func setupCellLayoutView<CustomView>(_ cellView: CellLayoutContainerView<AvatarView, CustomView, StatusView>,
                                                  user: User,
-                                                 alignment: ChatItemAlignment,
+                                                 alignment: STableItemAlignment,
                                                  bubble: Cell.BubbleType,
                                                  status: MessageStatus) {
         cellView.alignment = .bottom
@@ -192,7 +192,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
 
     private func setupMainMessageView<CustomView>(_ cellView: MainContainerView<AvatarView, CustomView, StatusView>,
                                                   user: User,
-                                                  alignment: ChatItemAlignment,
+                                                  alignment: STableItemAlignment,
                                                   bubble: Cell.BubbleType,
                                                   status: MessageStatus) {
         cellView.containerView.alignment = .bottom
@@ -289,7 +289,7 @@ extension DefaultChatCollectionDataSource: UICollectionViewDataSource {
             let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                        withReuseIdentifier: TextTitleView.reuseIdentifier,
                                                                        for: indexPath) as! TextTitleView
-            view.customView.text = "Made with ChatLayout"
+            view.customView.text = "Made with STableLayout"
             view.customView.preferredMaxLayoutWidth = 300
             view.customView.textColor = .lightGray
             view.customView.numberOfLines = 0
@@ -302,17 +302,17 @@ extension DefaultChatCollectionDataSource: UICollectionViewDataSource {
 
 }
 
-extension DefaultChatCollectionDataSource: ChatLayoutDelegate {
+extension DefaultChatCollectionDataSource: STableLayoutDelegate {
 
-    public func shouldPresentHeader(_ chatLayout: ChatLayout, at sectionIndex: Int) -> Bool {
+    public func shouldPresentHeader(_ sTableLayout: STableLayout, at sectionIndex: Int) -> Bool {
         return true
     }
 
-    public func shouldPresentFooter(_ chatLayout: ChatLayout, at sectionIndex: Int) -> Bool {
+    public func shouldPresentFooter(_ sTableLayout: STableLayout, at sectionIndex: Int) -> Bool {
         return true
     }
 
-    public func sizeForItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath) -> ItemSize {
+    public func sizeForItem(_ sTableLayout: STableLayout, of kind: ItemKind, at indexPath: IndexPath) -> ItemSize {
         switch kind {
         case .cell:
             let item = sections[indexPath.section].cells[indexPath.item]
@@ -320,27 +320,27 @@ extension DefaultChatCollectionDataSource: ChatLayoutDelegate {
             case let .message(message, bubbleType: _):
                 switch message.data {
                 case .text:
-                    return .estimated(CGSize(width: chatLayout.layoutFrame.width, height: 36))
+                    return .estimated(CGSize(width: sTableLayout.layoutFrame.width, height: 36))
                 case let .image(_, isLocallyStored: isDownloaded):
-                    return .estimated(CGSize(width: chatLayout.layoutFrame.width, height: isDownloaded ? 120 : 80))
+                    return .estimated(CGSize(width: sTableLayout.layoutFrame.width, height: isDownloaded ? 120 : 80))
                 case let .url(_, isLocallyStored: isDownloaded):
-                    return .estimated(CGSize(width: chatLayout.layoutFrame.width, height: isDownloaded ? 60 : 36))
+                    return .estimated(CGSize(width: sTableLayout.layoutFrame.width, height: isDownloaded ? 60 : 36))
                 }
             case .date:
-                return .estimated(CGSize(width: chatLayout.layoutFrame.width, height: 18))
+                return .estimated(CGSize(width: sTableLayout.layoutFrame.width, height: 18))
             case .typingIndicator:
                 return .estimated(CGSize(width: 60, height: 36))
             case .messageGroup:
-                return .estimated(CGSize(width: min(85, chatLayout.layoutFrame.width / 3), height: 18))
+                return .estimated(CGSize(width: min(85, sTableLayout.layoutFrame.width / 3), height: 18))
             case .deliveryStatus:
-                return .estimated(CGSize(width: chatLayout.layoutFrame.width, height: 18))
+                return .estimated(CGSize(width: sTableLayout.layoutFrame.width, height: 18))
             }
         case .footer, .header:
             return .auto
         }
     }
 
-    public func alignmentForItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath) -> ChatItemAlignment {
+    public func alignmentForItem(_ sTableLayout: STableLayout, of kind: ItemKind, at indexPath: IndexPath) -> STableItemAlignment {
         switch kind {
         case .header:
             return .center
@@ -359,7 +359,7 @@ extension DefaultChatCollectionDataSource: ChatLayoutDelegate {
         }
     }
 
-    public func initialLayoutAttributesForInsertedItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath, modifying originalAttributes: ChatLayoutAttributes, on state: InitialAttributesRequestType) {
+    public func initialLayoutAttributesForInsertedItem(_ sTableLayout: STableLayout, of kind: ItemKind, at indexPath: IndexPath, modifying originalAttributes: STableLayoutAttributes, on state: InitialAttributesRequestType) {
         originalAttributes.alpha = 0
         guard state == .invalidation,
               kind == .cell else {
@@ -381,7 +381,7 @@ extension DefaultChatCollectionDataSource: ChatLayoutDelegate {
         }
     }
 
-    public func finalLayoutAttributesForDeletedItem(_ chatLayout: ChatLayout, of kind: ItemKind, at indexPath: IndexPath, modifying originalAttributes: ChatLayoutAttributes) {
+    public func finalLayoutAttributesForDeletedItem(_ sTableLayout: STableLayout, of kind: ItemKind, at indexPath: IndexPath, modifying originalAttributes: STableLayoutAttributes) {
         originalAttributes.alpha = 0
         guard kind == .cell else {
             return

@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // BubbleController.swift
 // https://github.com/ekazaev/ChatLayout
 //

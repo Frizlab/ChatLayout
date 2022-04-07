@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // Section.swift
 // https://github.com/ekazaev/ChatLayout
 //

@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // RawMessage.swift
 // https://github.com/ekazaev/ChatLayout
 //

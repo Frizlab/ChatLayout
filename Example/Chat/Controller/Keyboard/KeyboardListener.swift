@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // KeyboardListener.swift
 // https://github.com/ekazaev/ChatLayout
 //

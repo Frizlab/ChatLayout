@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // KeyboardInfo.swift
 // https://github.com/ekazaev/ChatLayout
 //

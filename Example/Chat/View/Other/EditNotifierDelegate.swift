@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // EditNotifierDelegate.swift
 // https://github.com/ekazaev/ChatLayout
 //

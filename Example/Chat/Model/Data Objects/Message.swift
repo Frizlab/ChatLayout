@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // Message.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import DifferenceKit
 import Foundation
 
@@ -33,7 +33,7 @@ enum MessageStatus: Hashable {
 
 }
 
-extension ChatItemAlignment {
+extension STableItemAlignment {
 
     var isIncoming: Bool {
         return self == .leading

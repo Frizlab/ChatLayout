@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // DateAccessoryView.swift
 // https://github.com/ekazaev/ChatLayout
 //

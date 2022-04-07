@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // ProcessInfo+Extension.swift
 // https://github.com/ekazaev/ChatLayout
 //

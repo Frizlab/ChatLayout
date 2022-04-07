@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // Constants.swift
 // https://github.com/ekazaev/ChatLayout
 //

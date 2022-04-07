@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // URLView.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import Foundation
 import LinkPresentation
 import UIKit
@@ -40,7 +40,7 @@ final class URLView: UIView, ContainerCollectionViewCellDelegate {
         linkView = nil
     }
 
-    func apply(_ layoutAttributes: ChatLayoutAttributes) {
+    func apply(_ layoutAttributes: STableLayoutAttributes) {
         viewPortWidth = layoutAttributes.layoutFrame.width
         setupSize()
     }

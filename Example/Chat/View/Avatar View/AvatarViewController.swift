@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // AvatarViewController.swift
 // https://github.com/ekazaev/ChatLayout
 //

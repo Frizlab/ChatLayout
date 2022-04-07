@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // DefaultRandomDataProvider.swift
 // https://github.com/ekazaev/ChatLayout
 //

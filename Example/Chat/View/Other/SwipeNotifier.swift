@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // SwipeNotifier.swift
 // https://github.com/ekazaev/ChatLayout
 //

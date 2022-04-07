@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // TextMessageView.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import Foundation
 import UIKit
 
@@ -38,7 +38,7 @@ final class TextMessageView: UIView, ContainerCollectionViewCellDelegate {
     // Uncomment this method to test the performance without calculating text cell size using autolayout
     // For the better illustration set DefaultRandomDataProvider.enableRichContent/enableNewMessages/enableRichContent
     // to false
-//    func preferredLayoutAttributesFitting(_ layoutAttributes: ChatLayoutAttributes) -> ChatLayoutAttributes? {
+//    func preferredLayoutAttributesFitting(_ layoutAttributes: STableLayoutAttributes) -> STableLayoutAttributes? {
 //        viewPortWidth = layoutAttributes.layoutFrame.width
 //        guard let text = controller?.text as NSString? else {
 //            return layoutAttributes
@@ -53,7 +53,7 @@ final class TextMessageView: UIView, ContainerCollectionViewCellDelegate {
 //        return layoutAttributes
 //    }
 
-    func apply(_ layoutAttributes: ChatLayoutAttributes) {
+    func apply(_ layoutAttributes: STableLayoutAttributes) {
         viewPortWidth = layoutAttributes.layoutFrame.width
         setupSize()
     }

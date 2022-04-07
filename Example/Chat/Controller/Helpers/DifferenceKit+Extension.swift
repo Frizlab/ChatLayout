@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // DifferenceKit+Extension.swift
 // https://github.com/ekazaev/ChatLayout
 //

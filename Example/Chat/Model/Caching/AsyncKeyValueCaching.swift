@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // AsyncKeyValueCaching.swift
 // https://github.com/ekazaev/ChatLayout
 //

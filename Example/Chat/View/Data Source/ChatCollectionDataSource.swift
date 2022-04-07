@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // ChatCollectionDataSource.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,11 +7,11 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import Foundation
 import UIKit
 
-protocol ChatCollectionDataSource: UICollectionViewDataSource, ChatLayoutDelegate {
+protocol ChatCollectionDataSource: UICollectionViewDataSource, STableLayoutDelegate {
 
     var sections: [Section] { get set }
 

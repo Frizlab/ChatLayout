@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // ChatControllerDelegate.swift
 // https://github.com/ekazaev/ChatLayout
 //

@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // DefaultImageLoader.swift
 // https://github.com/ekazaev/ChatLayout
 //

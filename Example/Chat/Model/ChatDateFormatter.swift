@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // ChatDateFormatter.swift
 // https://github.com/ekazaev/ChatLayout
 //

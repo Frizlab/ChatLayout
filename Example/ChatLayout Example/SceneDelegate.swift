@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // SceneDelegate.swift
 // https://github.com/ekazaev/ChatLayout
 //

@@ -3,20 +3,20 @@ import PackageDescription
 
 
 let package = Package(
-	name: "ChatLayout",
+	name: "STableLayout",
 	platforms: [
 		.iOS(.v12)
 	],
 	products: [
-		.library(name: "ChatLayout",                        targets: ["ChatLayout"]),
-		.library(name: "ChatLayoutStatic",  type: .static,  targets: ["ChatLayout"]),
-		.library(name: "ChatLayoutDynamic", type: .dynamic, targets: ["ChatLayout"])
+		.library(name: "STableLayout",                        targets: ["STableLayout"]),
+		.library(name: "STableLayoutStatic",  type: .static,  targets: ["STableLayout"]),
+		.library(name: "STableLayoutDynamic", type: .dynamic, targets: ["STableLayout"])
 	],
 	targets: [
-		.target(name: "ChatLayout"),
+		.target(name: "STableLayout"),
 		.testTarget(
-			name: "ChatLayoutTests",
-			dependencies: ["ChatLayout"]
+			name: "STableLayoutTests",
+			dependencies: ["STableLayout"]
 		)
 	]
 )

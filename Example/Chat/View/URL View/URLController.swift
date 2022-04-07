@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // URLController.swift
 // https://github.com/ekazaev/ChatLayout
 //

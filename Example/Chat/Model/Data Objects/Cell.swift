@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // Cell.swift
 // https://github.com/ekazaev/ChatLayout
 //
@@ -7,7 +7,7 @@
 // Distributed under the MIT license.
 //
 
-import ChatLayout
+import STableLayout
 import DifferenceKit
 import Foundation
 import UIKit
@@ -29,7 +29,7 @@ enum Cell: Hashable {
 
     case deliveryStatus
 
-    var alignment: ChatItemAlignment {
+    var alignment: STableItemAlignment {
         switch self {
         case let .message(message, _):
             return message.type == .incoming ? .leading : .trailing

@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // TextGenerator.swift
 // https://github.com/ekazaev/ChatLayout
 //

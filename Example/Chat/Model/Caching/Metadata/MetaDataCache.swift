@@ -1,5 +1,5 @@
 //
-// ChatLayout
+// STableLayout
 // MetaDataCache.swift
 // https://github.com/ekazaev/ChatLayout
 //
