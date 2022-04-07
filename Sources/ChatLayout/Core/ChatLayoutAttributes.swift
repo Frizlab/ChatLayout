@@ -28,7 +28,7 @@ public final class ChatLayoutAttributes: UICollectionViewLayoutAttributes {
 	public internal(set) var adjustedContentInsets: UIEdgeInsets = .zero
 	
 	/** `ChatLayout`s visible bounds size excluding `adjustedContentInsets`. Added for convenience. */
-	public internal(set) var visibleBoundsSize: CGSize = .zero
+//	public internal(set) var visibleBoundsSize: CGSize = .zero
 	
 	/** `ChatLayout`s visible bounds size excluding `adjustedContentInsets` and `additionalInsets`. Added for convenience. */
 	public internal(set) var layoutFrame: CGRect = .zero
@@ -57,7 +57,7 @@ public final class ChatLayoutAttributes: UICollectionViewLayoutAttributes {
 		copy.additionalInsets = additionalInsets
 		copy.viewSize = viewSize
 		copy.adjustedContentInsets = adjustedContentInsets
-		copy.visibleBoundsSize = visibleBoundsSize
+//		copy.visibleBoundsSize = visibleBoundsSize
 		copy.layoutFrame = layoutFrame
 #if DEBUG
 		copy.id = id

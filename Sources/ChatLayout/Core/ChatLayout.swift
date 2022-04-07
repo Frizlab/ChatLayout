@@ -58,7 +58,11 @@ public final class ChatLayout: UICollectionViewLayout {
 	 It should be done manually. */
 	public var keepContentOffsetAtBottomOnBatchUpdates: Bool = false
 	
-	/** Represent the currently visible rectangle. */
+	/**
+	 Represent the currently visible rectangle.
+	 
+	 - Note: This calls ObjC, and is relatively expensive.
+	 We should cache it (it’s ~17% of the computation of the layout attributes in a rect; when pinning is enabled, we can see the CPU rise). */
 	public var visibleBounds: CGRect {
 		guard let collectionView = collectionView else {
 			return .zero

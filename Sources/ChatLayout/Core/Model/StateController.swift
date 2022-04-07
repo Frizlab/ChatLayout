@@ -190,9 +190,9 @@ final class StateController {
 		attributes.alignment = item.alignment
 		attributes.pinned = item.pinning != .none
 		attributes.viewSize = layoutRepresentation.viewSize
-		attributes.adjustedContentInsets = layoutRepresentation.adjustedContentInset
-		attributes.visibleBoundsSize = layoutRepresentation.visibleBounds.size
 		attributes.layoutFrame = layoutRepresentation.layoutFrame
+//		attributes.visibleBoundsSize = layoutRepresentation.visibleBounds.size
+		attributes.adjustedContentInsets = layoutRepresentation.adjustedContentInset
 		attributes.additionalInsets = layoutRepresentation.settings.additionalInsets
 		return attributes
 	}
