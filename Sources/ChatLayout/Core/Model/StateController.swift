@@ -105,7 +105,11 @@ final class StateController {
 			cachedAttributesState.rect.contains(rect)
 		{
 			/* We use the cache for the static attributes, but we must re-compute the pinned attributes. */
-			return cachedAttributesState.attributes.binarySearchRange(predicate: predicate)
+			let (_, pinnedAttributes) = allAttributes(at: state, visibleRect: layoutRepresentation.visibleBounds, allowPinning: allowPinning, returnPinnedOnly: true)
+			return (
+				cachedAttributesState.attributes.binarySearchRange(predicate: predicate) +
+				pinnedAttributes.binarySearchRange(predicate: predicate)
+			)
 		} else {
 			let totalRect: CGRect
 			switch state {
@@ -590,7 +594,7 @@ final class StateController {
 		return contentHeight(at: state).rounded() > visibleBoundsHeight.rounded()
 	}
 	
-	private func allAttributes(at state: ModelState, visibleRect: CGRect? = nil, allowPinning: Bool = true) -> (static: [ChatLayoutAttributes], pinned: [ChatLayoutAttributes]) {
+	private func allAttributes(at state: ModelState, visibleRect: CGRect? = nil, allowPinning: Bool = true, returnPinnedOnly: Bool = false) -> (static: [ChatLayoutAttributes], pinned: [ChatLayoutAttributes]) {
 		let layout = self.layout(at: state)
 		
 		if let visibleRect = visibleRect {
@@ -605,6 +609,9 @@ final class StateController {
 			func check(_ rect: CGRect, _ pinned: Bool) -> Bool {
 				guard !pinned else {
 					return visibleRect.intersects(rect)
+				}
+				guard !returnPinnedOnly else {
+					return false
 				}
 				
 				switch staticTraversalState {
@@ -634,10 +641,11 @@ final class StateController {
 			var allStaticRects = [(frame: CGRect, indexPath: ItemPath, kind: ItemKind)]()
 			var allPinnedRects = [(frame: CGRect, indexPath: ItemPath, kind: ItemKind)]()
 			/* I dont think there can be more then a 200 elements on the screen simultaneously. */
-			allStaticRects.reserveCapacity(200)
+			if !returnPinnedOnly {allStaticRects.reserveCapacity(200)}
 			allPinnedRects.reserveCapacity(10)
 			for sectionIndex in 0..<layout.sections.count {
 				let section = layout.sections[sectionIndex]
+				guard section.frame.intersects(visibleRect) else {continue}
 				
 				/* Do we have a header for this section? */
 				if let headerItem = section.header {
@@ -654,7 +662,7 @@ final class StateController {
 				
 				var startingIndex = 0
 				/* If header is not visible (or is pinned), we have to compute the first visible static item. */
-				if staticTraversalState == .notFound, let lastIndex = section.staticItemIndexes.last {
+				if !returnPinnedOnly, staticTraversalState == .notFound, let lastIndex = section.staticItemIndexes.last {
 					func predicate(itemIndex: Int) -> ComparisonResult {
 						let item = section.items[itemIndex]
 						let itemFrame = frame(of: item, in: section, at: state, isFinal: true, allowPinning: allowPinning)
@@ -689,7 +697,7 @@ final class StateController {
 				
 				/* Process the static items.
 				 * We process the pinned item indexes first because they will not change the traversal state. */
-				for itemIndex in section.pinnedItemIndexes + section.staticItemIndexes.drop(while: { $0 < startingIndex }) {
+				for itemIndex in section.pinnedItemIndexes + (!returnPinnedOnly ? section.staticItemIndexes.drop(while: { $0 < startingIndex }) : []) {
 					let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
 					let item = section.items[itemIndex]
 					
