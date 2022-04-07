@@ -145,10 +145,6 @@ struct SectionModel {
 	}
 	
 	mutating func set(footer: ItemModel?) {
-		guard let _ = self.footer, let _ = footer else {
-			self.footer = footer
-			return
-		}
 		self.footer = footer
 	}
 	
