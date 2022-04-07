@@ -18,5 +18,8 @@ public final class ChatLayoutInvalidationContext: UICollectionViewLayoutInvalida
 	/**
 	 Indicates whether to recompute the positions and sizes of the items based on the current collection view and delegate layout metrics. */
 	public var invalidateLayoutMetrics = true
+	/**
+	 If this is true, only the pinned items should be invalidated; everything should be left as-is. */
+	public var invalidateForPinning = false
 	
 }

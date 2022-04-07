@@ -32,6 +32,7 @@ struct ItemModel {
 	
 	var alignment: ChatItemAlignment
 	var pinning: ChatItemPinning
+	var pinned: Bool {pinning != .none}
 	
 	var offsetY: CGFloat = .zero
 	

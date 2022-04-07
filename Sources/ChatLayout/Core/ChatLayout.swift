@@ -584,15 +584,21 @@ public final class ChatLayout: UICollectionViewLayout {
 			invalidationActions.contains(.shouldInvalidateOnBoundsChange)
 		)
 		
-		invalidationActions.remove(.shouldInvalidateOnBoundsChange)
-		/* TVR */
-		return shouldInvalidateLayout || true
+		return shouldInvalidateLayout || settings.allowPinning
 	}
 	
 	/** Retrieves a context object that defines the portions of the layout that should change when a bounds change occurs. */
 	public override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
 		let invalidationContext = super.invalidationContext(forBoundsChange: newBounds) as! ChatLayoutInvalidationContext
 		invalidationContext.invalidateLayoutMetrics = false
+		/* This test is the opposite of the test done in shouldInvalidateLayout(forBoundsChange:). */
+		invalidationContext.invalidateForPinning = !(
+			cachedCollectionViewSize != .some(newBounds.size) ||
+			cachedCollectionViewInset != .some(adjustedContentInset) ||
+			invalidationActions.contains(.shouldInvalidateOnBoundsChange)
+		)
+		/* Note: Upstream implementation had this in should invalidate, but we now have to move it here becase we check its value in the test above. */
+		invalidationActions.remove(.shouldInvalidateOnBoundsChange)
 		return invalidationContext
 	}
 	
@@ -608,30 +614,36 @@ public final class ChatLayout: UICollectionViewLayout {
 			return
 		}
 		
-		controller.resetCachedAttributes()
-		
 		dontReturnAttributes = context.invalidateDataSourceCounts && !context.invalidateEverything
 		
+		var resetCachedAttributes = !context.invalidateForPinning
+		
 		if context.invalidateEverything {
+			resetCachedAttributes = true
 			prepareActions.formUnion([.recreateSectionModels])
 		}
 		
 		/* Checking `cachedCollectionViewWidth != collectionView.bounds.size.width` is necessary because the collection view's width can change without a `contentSizeAdjustment` occurring. */
 		if context.contentSizeAdjustment.width != 0 || cachedCollectionViewSize != collectionView.bounds.size {
+			resetCachedAttributes = true
 			prepareActions.formUnion([.cachePreviousWidth])
 		}
 		
 		if cachedCollectionViewInset != adjustedContentInset {
+			resetCachedAttributes = true
 			prepareActions.formUnion([.cachePreviousContentInsets])
 		}
 		
 		if context.invalidateLayoutMetrics, !context.invalidateDataSourceCounts {
+			resetCachedAttributes = true
 			prepareActions.formUnion([.updateLayoutMetrics])
 		}
 		
 		if let currentPositionSnapshot = currentPositionSnapshot {
+			resetCachedAttributes = true
+			
 			let contentHeight = controller.contentHeight(at: state)
-			if let frame = controller.itemFrame(for: currentPositionSnapshot.indexPath.itemPath, kind: currentPositionSnapshot.kind, at: state, isFinal: true, allowPinning: false)?.frame,
+			if let frame = controller.itemFrame(for: currentPositionSnapshot.indexPath.itemPath, kind: currentPositionSnapshot.kind, at: state, isFinal: true, allowPinning: false),
 				contentHeight != 0,
 				contentHeight > visibleBounds.size.height
 			{
@@ -639,6 +651,7 @@ public final class ChatLayout: UICollectionViewLayout {
 					case .top:
 						let desiredOffset = frame.minY - currentPositionSnapshot.offset - collectionView.adjustedContentInset.top - settings.additionalInsets.top
 						context.contentOffsetAdjustment.y = desiredOffset - collectionView.contentOffset.y
+						
 					case .bottom:
 						let maxAllowed = max(-collectionView.adjustedContentInset.top, contentHeight - collectionView.frame.height + collectionView.adjustedContentInset.bottom)
 						let desiredOffset = max(min(maxAllowed, frame.maxY + currentPositionSnapshot.offset - collectionView.bounds.height + collectionView.adjustedContentInset.bottom + settings.additionalInsets.bottom), -collectionView.adjustedContentInset.top)
@@ -646,6 +659,11 @@ public final class ChatLayout: UICollectionViewLayout {
 				}
 			}
 		}
+		
+		if resetCachedAttributes {
+			controller.resetCachedAttributes()
+		}
+		
 		super.invalidateLayout(with: context)
 	}
 	
