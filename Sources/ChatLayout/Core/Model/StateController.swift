@@ -105,7 +105,7 @@ final class StateController {
 			cachedAttributesState.rect.contains(rect)
 		{
 			/* We use the cache for the static attributes, but we must re-compute the pinned attributes. */
-			let (_, pinnedAttributes) = allAttributes(at: state, visibleRect: layoutRepresentation.visibleBounds, allowPinning: allowPinning, returnPinnedOnly: true)
+			let (_, pinnedAttributes) = allAttributes(at: state, visibleRect: rect, allowPinning: allowPinning, returnPinnedOnly: true)
 			return (
 				cachedAttributesState.attributes.binarySearchRange(predicate: predicate) +
 				pinnedAttributes.binarySearchRange(predicate: predicate)
