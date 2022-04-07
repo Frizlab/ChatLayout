@@ -20,6 +20,13 @@ struct SectionModel {
 	private(set) var footer: ItemModel?
 	private(set) var items: [ItemModel]
 	
+	/* The following statements are true when the model is assembled:
+	 *   - Both arrays are sorted ascending;
+	 *   - The intersection of staticItemIndexes and pinnedItemIndexes is empty;
+	 *   - The union of staticItemIndexes and pinnedItemIndexes contains all of the indexes of items (0..<items.count). */
+	private(set) var staticItemIndexes = [Array<ItemModel>.Index]()
+	private(set) var pinnedItemIndexes = [Array<ItemModel>.Index]()
+
 	var offsetY: CGFloat = 0
 	
 	private unowned var collectionLayout: ChatLayoutRepresentation
@@ -75,9 +82,15 @@ struct SectionModel {
 			offsetY += header?.frame.height ?? 0
 		}
 		
+		staticItemIndexes.removeAll()
+		pinnedItemIndexes.removeAll()
+		staticItemIndexes.reserveCapacity(items.count)
+		
 		for rowIndex in 0..<items.count {
 			items[rowIndex].offsetY = offsetY
 			offsetY += items[rowIndex].height + collectionLayout.settings.interItemSpacing
+			if !items[rowIndex].pinned {staticItemIndexes.append(rowIndex)}
+			else                       {pinnedItemIndexes.append(rowIndex)}
 		}
 		
 		if footer != nil {
@@ -120,6 +133,17 @@ struct SectionModel {
 		
 		let heightDiff = item.height - oldItem.height
 		offsetEverything(below: index, by: heightDiff)
+		
+		/* TVR TODO: Optimize this */
+		if oldItem.pinned && !item.pinned {
+			pinnedItemIndexes.removeAll{ $0 == index }
+			staticItemIndexes.append(index)
+			staticItemIndexes.sort()
+		} else if !oldItem.pinned && item.pinned {
+			staticItemIndexes.removeAll{ $0 == index }
+			pinnedItemIndexes.append(index)
+			pinnedItemIndexes.sort()
+		}
 	}
 	
 	mutating func setAndAssemble(footer: ItemModel) {

@@ -653,9 +653,8 @@ final class StateController {
 				}
 				
 				var startingIndex = 0
-				/* If header is not visible. */
-#warning("TODO: Pinned items might fuck everything up")
-				if staticTraversalState == .notFound, !section.items.isEmpty {
+				/* If header is not visible (or is pinned), we have to compute the first visible static item. */
+				if staticTraversalState == .notFound, let lastIndex = section.staticItemIndexes.last {
 					func predicate(itemIndex: Int) -> ComparisonResult {
 						let item = section.items[itemIndex]
 						let itemFrame = frame(of: item, in: section, at: state, isFinal: true, allowPinning: allowPinning)
@@ -669,12 +668,12 @@ final class StateController {
 					}
 					
 					/* Find if any of the items of the section is visible. */
-					if [ComparisonResult.orderedSame, .orderedDescending].contains(predicate(itemIndex: section.items.count - 1)),
-						let firstMatchingIndex = Array(0..<section.items.count).binarySearch(predicate: predicate)
+					if [ComparisonResult.orderedSame, .orderedDescending].contains(predicate(itemIndex: lastIndex)),
+						let firstMatchingIndex = section.staticItemIndexes.binarySearch(predicate: predicate)
 					{
 						/* Find first item that is visible. */
 						startingIndex = firstMatchingIndex
-						for itemIndex in (0..<firstMatchingIndex).reversed() {
+						for itemIndex in section.staticItemIndexes.prefix(while: { $0 < firstMatchingIndex }).reversed() {
 							let item = section.items[itemIndex]
 							let itemFrame = frame(of: item, in: section, at: state, isFinal: true, allowPinning: allowPinning)
 							guard itemFrame.maxY >= visibleRect.minY else {
@@ -688,59 +687,60 @@ final class StateController {
 					}
 				}
 				
-				if startingIndex < section.items.count {
-					for itemIndex in startingIndex..<section.items.count {
-						let item = section.items[itemIndex]
-						let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
-						let itemFrame = frame(of: item, in: section, at: state, isFinal: true, allowPinning: allowPinning)
-						if check(itemFrame, item.pinned) {
-							if state == .beforeUpdate || isAnimatedBoundsChange {
-								if item.pinned {allPinnedRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
-								else           {allStaticRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
-							} else {
-								/* TVR note: The thing about these two complicated checks is: they are probably useless and we probably could add the rects unconditionally because AFAIK the collection view does not care if some layout attributes outside of the requested rect are returned. */
-								var itemWasVisibleBefore: Bool {
-									guard let itemIdentifier = itemIdentifier(for: itemPath, kind: .cell, at: .afterUpdate),
-											let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate),
-											let item = self.item(for: initialIndexPath, kind: .cell, at: .beforeUpdate),
-											item.calculatedOnce == true,
-											frame(of: item, in: self.layout(at: .beforeUpdate).sections[initialIndexPath.section], at: .beforeUpdate, isFinal: false, allowPinning: allowPinning)
-												.intersects(layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: -totalProposedCompensatingOffset))
-									else {
-										return false
-									}
-									return true
-								}
-								var itemWillBeVisible: Bool {
-									let offsetVisibleBounds = layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: proposedCompensatingOffset + batchUpdateCompensatingOffset)
-									let itemFrameIntersectsOffsetVisibleBounds = itemFrame.intersects(offsetVisibleBounds)
-									
-									if insertedIndexes.contains(itemPath.indexPath), itemFrameIntersectsOffsetVisibleBounds {
-										return true
-									}
-									
-									if let itemIdentifier = self.itemIdentifier(for: itemPath, kind: .cell, at: .afterUpdate),
-										let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate)?.indexPath,
-										movedIndexes.contains(initialIndexPath) || reloadedIndexes.contains(initialIndexPath),
-										/* TVR note: Upstream’s implementation used to have the following line here, instead of `itemFrameIntersectsOffsetVisibleBounds`:
-										 *   frame(of: item, in: section, at: state, isFinal: true, allowPinning: allowPinning).intersects(offsetVisibleBounds)
-										 * Indeed, the frame computation here should be exactly equal to itemFrame, and we can thus use the variable instead of recomputing everything.
-										 * I _think_ however the actual frame expected if the one of the initial index path, but I’m not sure… */
-										itemFrameIntersectsOffsetVisibleBounds
-									{
-										return true
-									}
+				/* Process the static items.
+				 * We process the pinned item indexes first because they will not change the traversal state. */
+				for itemIndex in section.pinnedItemIndexes + section.staticItemIndexes.drop(while: { $0 < startingIndex }) {
+					let itemPath = ItemPath(item: itemIndex, section: sectionIndex)
+					let item = section.items[itemIndex]
+					
+					let itemFrame = frame(of: item, in: section, at: state, isFinal: true, allowPinning: allowPinning)
+					if check(itemFrame, item.pinned) {
+						if state == .beforeUpdate || isAnimatedBoundsChange {
+							if !item.pinned {allStaticRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
+							else            {allPinnedRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
+						} else {
+							/* TVR note: The thing about these two complicated checks is: they are probably useless and we probably could add the rects unconditionally because AFAIK the collection view does not care if some layout attributes outside of the requested rect are returned. */
+							var itemWasVisibleBefore: Bool {
+								guard let itemIdentifier = itemIdentifier(for: itemPath, kind: .cell, at: .afterUpdate),
+										let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate),
+										let item = self.item(for: initialIndexPath, kind: .cell, at: .beforeUpdate),
+										item.calculatedOnce == true,
+										frame(of: item, in: self.layout(at: .beforeUpdate).sections[initialIndexPath.section], at: .beforeUpdate, isFinal: false, allowPinning: allowPinning)
+											.intersects(layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: -totalProposedCompensatingOffset))
+								else {
 									return false
 								}
-								if itemWillBeVisible || itemWasVisibleBefore {
-									if item.pinned {allPinnedRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
-									else           {allStaticRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
+								return true
+							}
+							var itemWillBeVisible: Bool {
+								let offsetVisibleBounds = layoutRepresentation.visibleBounds.offsetBy(dx: 0, dy: proposedCompensatingOffset + batchUpdateCompensatingOffset)
+								let itemFrameIntersectsOffsetVisibleBounds = itemFrame.intersects(offsetVisibleBounds)
+								
+								if insertedIndexes.contains(itemPath.indexPath), itemFrameIntersectsOffsetVisibleBounds {
+									return true
 								}
+								
+								if let itemIdentifier = self.itemIdentifier(for: itemPath, kind: .cell, at: .afterUpdate),
+									let initialIndexPath = self.itemPath(by: itemIdentifier, kind: .cell, at: .beforeUpdate)?.indexPath,
+									movedIndexes.contains(initialIndexPath) || reloadedIndexes.contains(initialIndexPath),
+									/* TVR note: Upstream’s implementation used to have the following line here, instead of `itemFrameIntersectsOffsetVisibleBounds`:
+									 *   frame(of: item, in: section, at: state, isFinal: true, allowPinning: allowPinning).intersects(offsetVisibleBounds)
+									 * Indeed, the frame computation here should be exactly equal to itemFrame, and we can thus use the variable instead of recomputing everything.
+									 * I _think_ however the actual frame expected if the one of the initial index path, but I’m not sure… */
+									itemFrameIntersectsOffsetVisibleBounds
+								{
+									return true
+								}
+								return false
+							}
+							if itemWillBeVisible || itemWasVisibleBefore {
+								if !item.pinned {allStaticRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
+								else            {allPinnedRects.append((frame: itemFrame, indexPath: itemPath, kind: .cell))}
 							}
 						}
-						guard staticTraversalState != .done else {
-							break
-						}
+					}
+					guard staticTraversalState != .done else {
+						break
 					}
 				}
 				
@@ -752,6 +752,10 @@ final class StateController {
 						if footerItem.pinned {allPinnedRects.append((frame: footerFrame, indexPath: sectionPath, kind: .footer))}
 						else                 {allStaticRects.append((frame: footerFrame, indexPath: sectionPath, kind: .footer))}
 					}
+				}
+				
+				guard staticTraversalState != .done else {
+					break
 				}
 			}
 			
