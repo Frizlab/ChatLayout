@@ -12,6 +12,8 @@ import UIKit
 
 
 
+/* TODO: Use a proper name for the delegate methods (w/ the proper prefix, e.g. sTableLayoutShouldPresentHeader(...)) */
+
 /** Represents the point in time `STableLayout` when chat layout asks about layout attributes modification. */
 public enum InitialAttributesRequestType {
 	
