@@ -234,7 +234,7 @@ final class StateController {
 				
 			case (true, .top):
 				let doOffset = (isCollectionViewUpdate && state == .beforeUpdate)
-				let delta = layoutRepresentation.effectiveTopOffset - item.offsetY - (doOffset ? totalProposedCompensatingOffset : 0)
+				let delta = layoutRepresentation.effectiveTopOffset - (section.offsetY + item.offsetY) - (doOffset ? totalProposedCompensatingOffset : 0)
 				if delta > 0 {
 					/* The section starts above the current offset, we must move the item to have the pinning. */
 					pinningOffset = min(delta, section.height - itemFrame.height)
