@@ -29,7 +29,7 @@ struct Section {
 
 	var offsetY: CGFloat = 0
 	
-	private unowned var collectionLayout: STableLayoutRepresentation
+	private unowned var collectionLayout: any STableLayoutRepresentation
 	
 	var count: Int {
 		return items.count
@@ -65,7 +65,7 @@ struct Section {
 		header: Item?,
 		footer: Item?,
 		items: [Item] = [],
-		collectionLayout: STableLayoutRepresentation
+		collectionLayout: any STableLayoutRepresentation
 	) {
 		self.id = id
 		self.items = items

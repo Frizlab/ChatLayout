@@ -22,12 +22,12 @@ struct LayoutModel {
 	}
 	
 	private(set) var sections: [Section]
-	private unowned var collectionLayout: STableLayoutRepresentation
+	private unowned var collectionLayout: any STableLayoutRepresentation
 	
 	private var sectionIndexByIdentifierCache: [UUID: Int]?
 	private var itemPathByIdentifierCache: [ItemUUIDKey: ItemPath]?
 	
-	init(sections: [Section], collectionLayout: STableLayoutRepresentation) {
+	init(sections: [Section], collectionLayout: any STableLayoutRepresentation) {
 		self.sections = sections
 		self.collectionLayout = collectionLayout
 	}

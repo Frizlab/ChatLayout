@@ -22,9 +22,9 @@ typealias TextTitleView = ContainerCollectionReusableView<UILabel>
 
 final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource {
 
-    private unowned var reloadDelegate: ReloadDelegate
+    private unowned var reloadDelegate: any ReloadDelegate
 
-    private unowned var editingDelegate: EditingAccessoryControllerDelegate
+    private unowned var editingDelegate: any EditingAccessoryControllerDelegate
 
     private let editNotifier: EditNotifier
 
@@ -40,8 +40,8 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
 
     init(editNotifier: EditNotifier,
          swipeNotifier: SwipeNotifier,
-         reloadDelegate: ReloadDelegate,
-         editingDelegate: EditingAccessoryControllerDelegate) {
+         reloadDelegate: any ReloadDelegate,
+         editingDelegate: any EditingAccessoryControllerDelegate) {
         self.reloadDelegate = reloadDelegate
         self.editingDelegate = editingDelegate
         self.editNotifier = editNotifier
@@ -218,13 +218,13 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         swipeNotifier.add(delegate: cellView)
     }
 
-    private func buildTextBubbleController<CustomView>(bubbleView: BezierMaskedView<CustomView>, messageType: MessageType, bubbleType: Cell.BubbleType) -> BubbleController {
+    private func buildTextBubbleController<CustomView>(bubbleView: BezierMaskedView<CustomView>, messageType: MessageType, bubbleType: Cell.BubbleType) -> any BubbleController {
         let textBubbleController = TextBubbleController(bubbleView: bubbleView, type: messageType, bubbleType: bubbleType)
         let bubbleController = BezierBubbleController(bubbleView: bubbleView, controllerProxy: textBubbleController, type: messageType, bubbleType: bubbleType)
         return bubbleController
     }
 
-    private func buildBezierBubbleController<CustomView>(for bubbleView: BezierMaskedView<CustomView>, messageType: MessageType, bubbleType: Cell.BubbleType) -> BubbleController {
+    private func buildBezierBubbleController<CustomView>(for bubbleView: BezierMaskedView<CustomView>, messageType: MessageType, bubbleType: Cell.BubbleType) -> any BubbleController {
         let contentBubbleController = FullCellContentBubbleController(bubbleView: bubbleView)
         let bubbleController = BezierBubbleController(bubbleView: bubbleView, controllerProxy: contentBubbleController, type: messageType, bubbleType: bubbleType)
         return bubbleController

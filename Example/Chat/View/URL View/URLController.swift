@@ -17,7 +17,7 @@ final class URLController {
 
     var metadata: LPLinkMetadata?
 
-    weak var delegate: ReloadDelegate?
+    weak var delegate: any ReloadDelegate?
 
     weak var view: URLView?
 
@@ -25,9 +25,9 @@ final class URLController {
 
     private let messageId: UUID
 
-    private let bubbleController: BubbleController
+    private let bubbleController: any BubbleController
 
-    init(url: URL, messageId: UUID, bubbleController: BubbleController) {
+    init(url: URL, messageId: UUID, bubbleController: any BubbleController) {
         self.url = url
         self.messageId = messageId
         self.bubbleController = bubbleController

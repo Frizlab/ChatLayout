@@ -20,7 +20,7 @@ final class KeyboardListener {
 
     private var delegates = NSHashTable<AnyObject>.weakObjects()
 
-    func add(delegate: KeyboardListenerDelegate) {
+    func add(delegate: any KeyboardListenerDelegate) {
         delegates.add(delegate)
     }
 
@@ -35,7 +35,7 @@ final class KeyboardListener {
 
         keyboardRect = info.frameEnd
         isKeyboardVisible = true
-        delegates.allObjects.compactMap { $0 as? KeyboardListenerDelegate }.forEach {
+        delegates.allObjects.compactMap { $0 as? any KeyboardListenerDelegate }.forEach {
             $0.keyboardWillShow(info: info)
         }
     }
@@ -45,7 +45,7 @@ final class KeyboardListener {
             return
         }
         keyboardRect = info.frameEnd
-        delegates.allObjects.compactMap { $0 as? KeyboardListenerDelegate }.forEach {
+        delegates.allObjects.compactMap { $0 as? any KeyboardListenerDelegate }.forEach {
             $0.keyboardWillChangeFrame(info: info)
         }
     }
@@ -55,7 +55,7 @@ final class KeyboardListener {
             return
         }
         keyboardRect = info.frameEnd
-        delegates.allObjects.compactMap { $0 as? KeyboardListenerDelegate }.forEach {
+        delegates.allObjects.compactMap { $0 as? any KeyboardListenerDelegate }.forEach {
             $0.keyboardDidChangeFrame(info: info)
         }
     }
@@ -65,7 +65,7 @@ final class KeyboardListener {
             return
         }
         keyboardRect = info.frameEnd
-        delegates.allObjects.compactMap { $0 as? KeyboardListenerDelegate }.forEach {
+        delegates.allObjects.compactMap { $0 as? any KeyboardListenerDelegate }.forEach {
             $0.keyboardDidShow(info: info)
         }
     }
@@ -75,7 +75,7 @@ final class KeyboardListener {
             return
         }
         keyboardRect = info.frameEnd
-        delegates.allObjects.compactMap { $0 as? KeyboardListenerDelegate }.forEach {
+        delegates.allObjects.compactMap { $0 as? any KeyboardListenerDelegate }.forEach {
             $0.keyboardWillHide(info: info)
         }
     }
@@ -86,7 +86,7 @@ final class KeyboardListener {
         }
         keyboardRect = info.frameEnd
         isKeyboardVisible = false
-        delegates.allObjects.compactMap { $0 as? KeyboardListenerDelegate }.forEach {
+        delegates.allObjects.compactMap { $0 as? any KeyboardListenerDelegate }.forEach {
             $0.keyboardDidHide(info: info)
         }
     }

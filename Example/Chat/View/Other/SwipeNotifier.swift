@@ -26,18 +26,18 @@ final class SwipeNotifier {
 
     private(set) var swipeCompletionRate: CGFloat = 0
 
-    func add(delegate: SwipeNotifierDelegate) {
+    func add(delegate: any SwipeNotifierDelegate) {
         delegates.add(delegate)
     }
 
     func setSwipeCompletionRate(_ swipeCompletionRate: CGFloat) {
         self.swipeCompletionRate = swipeCompletionRate
-        delegates.allObjects.compactMap { $0 as? SwipeNotifierDelegate }.forEach { $0.swipeCompletionRate = swipeCompletionRate }
+        delegates.allObjects.compactMap { $0 as? any SwipeNotifierDelegate }.forEach { $0.swipeCompletionRate = swipeCompletionRate }
     }
 
     func setAccessoryOffset(_ accessorySafeAreaInsets: UIEdgeInsets) {
         self.accessorySafeAreaInsets = accessorySafeAreaInsets
-        delegates.allObjects.compactMap { $0 as? SwipeNotifierDelegate }.forEach { $0.accessorySafeAreaInsets = accessorySafeAreaInsets }
+        delegates.allObjects.compactMap { $0 as? any SwipeNotifierDelegate }.forEach { $0.accessorySafeAreaInsets = accessorySafeAreaInsets }
     }
 
 }

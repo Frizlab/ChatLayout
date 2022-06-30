@@ -52,8 +52,8 @@ final class ChatViewController: UIViewController {
     private var collectionView: UICollectionView!
     private var sTableLayout = STableLayout()
     private let inputBarView = InputBarAccessoryView()
-    private let chatController: ChatController
-    private let dataSource: ChatCollectionDataSource
+    private let chatController: any ChatController
+    private let dataSource: any ChatCollectionDataSource
     private let fpsCounter = FPSCounter()
     private let fpsView = EdgeAligningView<UILabel>(frame: CGRect(origin: .zero, size: .init(width: 30, height: 30)))
     private var animator: ManualAnimator?
@@ -67,8 +67,8 @@ final class ChatViewController: UIViewController {
         return gesture
     }()
 
-    init(chatController: ChatController,
-         dataSource: ChatCollectionDataSource,
+    init(chatController: any ChatController,
+         dataSource: any ChatCollectionDataSource,
          editNotifier: EditNotifier,
          swipeNotifier: SwipeNotifier) {
         self.chatController = chatController

@@ -18,7 +18,7 @@ final class ImageController {
         }
     }
 
-    weak var delegate: ReloadDelegate?
+    weak var delegate: any ReloadDelegate?
 
     var state: ImageViewState {
         guard let image = image else {
@@ -33,9 +33,9 @@ final class ImageController {
 
     private let source: ImageMessageSource
 
-    private let bubbleController: BubbleController
+    private let bubbleController: any BubbleController
 
-    init(source: ImageMessageSource, messageId: UUID, bubbleController: BubbleController) {
+    init(source: ImageMessageSource, messageId: UUID, bubbleController: any BubbleController) {
         self.source = source
         self.messageId = messageId
         self.bubbleController = bubbleController

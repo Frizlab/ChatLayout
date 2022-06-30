@@ -21,9 +21,9 @@ final class TextMessageController {
 
     let type: MessageType
 
-    private let bubbleController: BubbleController
+    private let bubbleController: any BubbleController
 
-    init(text: String, type: MessageType, bubbleController: BubbleController) {
+    init(text: String, type: MessageType, bubbleController: any BubbleController) {
         self.text = text
         self.type = type
         self.bubbleController = bubbleController

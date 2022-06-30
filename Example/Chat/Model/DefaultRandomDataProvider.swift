@@ -34,7 +34,7 @@ protocol RandomDataProvider {
 
 final class DefaultRandomDataProvider: RandomDataProvider {
 
-    weak var delegate: RandomDataProviderDelegate?
+    weak var delegate: any RandomDataProviderDelegate?
 
     private var messageTimer: Timer?
 

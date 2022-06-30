@@ -14,9 +14,9 @@ public struct CachingImageLoader<C: AsyncKeyValueCaching>: ImageLoader where C.C
 
     private let cache: C
 
-    private let loader: ImageLoader
+    private let loader: any ImageLoader
 
-    public init(cache: C, loader: ImageLoader) {
+    public init(cache: C, loader: any ImageLoader) {
         self.cache = cache
         self.loader = loader
     }

@@ -12,7 +12,7 @@ import UIKit
 
 final class BezierBubbleController<CustomView: UIView>: BubbleController {
 
-    private let controllerProxy: BubbleController
+    private let controllerProxy: any BubbleController
 
     private let type: MessageType
 
@@ -24,7 +24,7 @@ final class BezierBubbleController<CustomView: UIView>: BubbleController {
         }
     }
 
-    init(bubbleView: BezierMaskedView<CustomView>, controllerProxy: BubbleController, type: MessageType, bubbleType: Cell.BubbleType) {
+    init(bubbleView: BezierMaskedView<CustomView>, controllerProxy: any BubbleController, type: MessageType, bubbleType: Cell.BubbleType) {
         self.controllerProxy = controllerProxy
         self.type = type
         self.bubbleType = bubbleType

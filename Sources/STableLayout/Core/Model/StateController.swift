@@ -68,9 +68,9 @@ final class StateController {
 	/** If I understand upstream and his blog post correctly, this is used to be able to return the _same_ attribute for a given item in order to avoid some animation glitches. */
 	private var cachedAttributeObjects = [ModelState: [ItemKind: [ItemPath: STableLayoutAttributes]]]()
 	
-	private unowned var layoutRepresentation: STableLayoutRepresentation
+	private unowned var layoutRepresentation: any STableLayoutRepresentation
 	
-	init(layoutRepresentation: STableLayoutRepresentation) {
+	init(layoutRepresentation: any STableLayoutRepresentation) {
 		self.layoutRepresentation = layoutRepresentation
 		self.storage = [.beforeUpdate: LayoutModel(sections: [], collectionLayout: self.layoutRepresentation)]
 		resetCachedAttributeObjects()

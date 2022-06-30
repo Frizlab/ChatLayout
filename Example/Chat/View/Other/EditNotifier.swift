@@ -16,13 +16,13 @@ final class EditNotifier {
 
     private var delegates = NSHashTable<AnyObject>.weakObjects()
 
-    func add(delegate: EditNotifierDelegate) {
+    func add(delegate: any EditNotifierDelegate) {
         delegates.add(delegate)
     }
 
     func setIsEditing(_ isEditing: Bool, duration: ActionDuration) {
         self.isEditing = isEditing
-        delegates.allObjects.compactMap { $0 as? EditNotifierDelegate }.forEach { $0.setIsEditing(isEditing, duration: duration) }
+        delegates.allObjects.compactMap { $0 as? any EditNotifierDelegate }.forEach { $0.setIsEditing(isEditing, duration: duration) }
     }
 
 }

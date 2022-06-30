@@ -12,9 +12,9 @@ import Foundation
 
 final class DefaultChatController: ChatController {
 
-    weak var delegate: ChatControllerDelegate?
+    weak var delegate: any ChatControllerDelegate?
 
-    private let dataProvider: RandomDataProvider
+    private let dataProvider: any RandomDataProvider
 
     private var typingState: TypingState = .idle
 
@@ -28,7 +28,7 @@ final class DefaultChatController: ChatController {
 
     var messages: [RawMessage] = []
 
-    init(dataProvider: RandomDataProvider, userId: Int) {
+    init(dataProvider: any RandomDataProvider, userId: Int) {
         self.dataProvider = dataProvider
         self.userId = userId
     }
