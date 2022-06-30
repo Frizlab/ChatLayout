@@ -149,7 +149,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         return cell
     }
 
-    private func createDateTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: STableItemAlignment, title: String) -> DateTitleCollectionCell {
+	private func createDateTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: STableItemAlignment, title: String, date: Date) -> DateTitleCollectionCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DateTitleCollectionCell.reuseIdentifier, for: indexPath) as! DateTitleCollectionCell
 		 cell.customView.layoutMargins = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
 		 cell.customView.backgroundColor = .init(white: 0.95, alpha: 1)
@@ -159,7 +159,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         cell.customView.customView.numberOfLines = 0
         cell.customView.customView.font = .preferredFont(forTextStyle: .caption2)
         cell.contentView.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
-		 cell.layer.zPosition = 42
+		cell.layer.zPosition = date.timeIntervalSince1970
         return cell
     }
 
@@ -269,7 +269,7 @@ extension DefaultChatCollectionDataSource : UICollectionViewDataSource {
             let cell = createGroupTitle(collectionView: collectionView, indexPath: indexPath, alignment: cell.alignment, title: group.title)
             return cell
         case let .date(group):
-            let cell = createDateTitle(collectionView: collectionView, indexPath: indexPath, alignment: cell.alignment, title: group.value)
+				  let cell = createDateTitle(collectionView: collectionView, indexPath: indexPath, alignment: cell.alignment, title: group.value, date: group.date)
             return cell
         case .typingIndicator:
             return createTypingIndicatorCell(collectionView: collectionView, indexPath: indexPath)
