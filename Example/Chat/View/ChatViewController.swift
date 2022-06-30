@@ -117,6 +117,7 @@ final class ChatViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Show Keyboard", style: .plain, target: self, action: #selector(ChatViewController.showHideKeyboard))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(ChatViewController.setEditNotEdit))
 
+		 sTableLayout.settings.allowPinning = true
         sTableLayout.settings.interItemSpacing = 8
         sTableLayout.settings.interSectionSpacing = 8
         sTableLayout.settings.additionalInsets = UIEdgeInsets(top: 8, left: 5, bottom: 8, right: 5)
