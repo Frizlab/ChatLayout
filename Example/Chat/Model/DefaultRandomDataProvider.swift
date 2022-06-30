@@ -32,6 +32,46 @@ protocol RandomDataProvider {
 
 }
 
+final class StaticRandomDataProvider : RandomDataProvider {
+	
+	private let users: [Int]
+	
+	private let receiverId: Int
+	
+	private var allUsersIds: [Int] {
+		return Array([users, [receiverId]].joined())
+	}
+	
+	init(receiverId: Int, usersIds: [Int]) {
+		self.users = usersIds
+		self.receiverId = receiverId
+	}
+	
+	func loadInitialMessages(completion: @escaping ([RawMessage]) -> Void) {
+		completion([
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)]),
+			RawMessage(id: UUID(), date: Date(), data: .text(TextGenerator.getString(of: 20)), userId: allUsersIds[Int.random(in: 0..<allUsersIds.count)])
+		])
+	}
+	
+	func loadPreviousMessages(completion: @escaping ([RawMessage]) -> Void) {
+		completion([])
+	}
+	
+	func stop() {
+	}
+	
+}
+
 final class DefaultRandomDataProvider : RandomDataProvider {
 
     weak var delegate: RandomDataProviderDelegate?
