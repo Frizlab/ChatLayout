@@ -20,14 +20,17 @@ public struct STableLayoutSettings {
 	 This value will be used as the initial size of the item and the final size will be calculated using `UICollectionViewCell.preferredLayoutAttributesFitting(...)`. */
 	public var estimatedItemSize: CGSize?
 	
+	/** Spacing above the first item of a section. */
+	public var spaceAboveFirstItem: CGFloat = 0
+	
 	/** Spacing between the items in the section. */
 	public var interItemSpacing: CGFloat = 0
 	
+	/** Spacing below the last item of a section. */
+	public var spaceBelowLastItem: CGFloat = 0
+	
 	/** Spacing between the sections. */
 	public var interSectionSpacing: CGFloat = 0
-	
-	/** Spacing between the first item of a section and the section header. */
-	public var sectionHeaderToItemsSpacing: CGFloat = 0
 	
 	/** Additional insets for the `STableLayout` content. */
 	public var additionalInsets: UIEdgeInsets = .zero

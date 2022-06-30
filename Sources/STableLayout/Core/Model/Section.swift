@@ -52,7 +52,7 @@ struct Section {
 			guard let lastItem = items.last else {
 				return header?.frame.maxY ?? .zero
 			}
-			return lastItem.locationHeight
+			return lastItem.locationHeight + collectionLayout.settings.spaceBelowLastItem
 		}
 	}
 	
@@ -80,7 +80,10 @@ struct Section {
 		if header != nil {
 			header?.offsetY = 0
 			offsetY += header?.frame.height ?? 0
-			offsetY += collectionLayout.settings.sectionHeaderToItemsSpacing
+		}
+		
+		if !items.isEmpty {
+			offsetY += collectionLayout.settings.spaceAboveFirstItem
 		}
 		
 		staticItemIndexes.removeAll()
@@ -92,6 +95,10 @@ struct Section {
 			offsetY += items[rowIndex].height + collectionLayout.settings.interItemSpacing
 			if !items[rowIndex].pinned {staticItemIndexes.append(rowIndex)}
 			else                       {pinnedItemIndexes.append(rowIndex)}
+		}
+		
+		if !items.isEmpty {
+			offsetY += collectionLayout.settings.spaceBelowLastItem
 		}
 		
 		if footer != nil {
