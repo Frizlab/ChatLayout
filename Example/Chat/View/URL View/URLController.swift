@@ -17,7 +17,7 @@ final class URLController {
 
     var metadata: LPLinkMetadata?
 
-    weak var delegate: any ReloadDelegate?
+    weak var delegate: ReloadDelegate?
 
     weak var view: URLView?
 

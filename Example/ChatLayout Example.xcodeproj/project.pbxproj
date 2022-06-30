@@ -11,7 +11,6 @@
 		7B55F73027F324A70041E601 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B55F72F27F324A70041E601 /* SceneDelegate.swift */; };
 		7B55F73227F324A70041E601 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B55F73127F324A70041E601 /* ViewController.swift */; };
 		7B55F73727F324A80041E601 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B55F73627F324A80041E601 /* Assets.xcassets */; };
-		7B55F74427F3260C0041E601 /* ChatLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 7B55F74327F3260C0041E601 /* ChatLayout */; };
 		7B55F79D27F327210041E601 /* SwipeNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B55F74927F327210041E601 /* SwipeNotifier.swift */; };
 		7B55F79E27F327210041E601 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B55F74A27F327210041E601 /* UIView+Extension.swift */; };
 		7B55F79F27F327210041E601 /* ManualAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B55F74B27F327210041E601 /* ManualAnimator.swift */; };
@@ -82,6 +81,7 @@
 		7B55F7E527F327E00041E601 /* FPSCounter in Frameworks */ = {isa = PBXBuildFile; productRef = 7B55F7E427F327E00041E601 /* FPSCounter */; };
 		7B55F7E827F328190041E601 /* InputBarAccessoryView in Frameworks */ = {isa = PBXBuildFile; productRef = 7B55F7E727F328190041E601 /* InputBarAccessoryView */; };
 		7B55F7EA27F328E50041E601 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B55F7E927F328E50041E601 /* LaunchScreen.xib */; };
+		7BBD9C26286DA48C0092CA95 /* STableLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 7BBD9C25286DA48C0092CA95 /* STableLayout */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,7 +91,6 @@
 		7B55F73127F324A70041E601 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		7B55F73627F324A80041E601 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7B55F73B27F324A90041E601 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7B55F74127F325E50041E601 /* ChatLayout */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ChatLayout; path = ..; sourceTree = "<group>"; };
 		7B55F74527F3263B0041E601 /* ChatLayout Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ChatLayout Example.entitlements"; sourceTree = "<group>"; };
 		7B55F74927F327210041E601 /* SwipeNotifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeNotifier.swift; sourceTree = "<group>"; };
 		7B55F74A27F327210041E601 /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
@@ -160,6 +159,7 @@
 		7B55F79C27F327210041E601 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		7B55F7DE27F3272C0041E601 /* ProcessInfo+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ProcessInfo+Extension.swift"; sourceTree = SOURCE_ROOT; };
 		7B55F7E927F328E50041E601 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
+		7BBD9C24286DA47A0092CA95 /* STableLayout */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = STableLayout; path = ..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,10 +167,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B55F74427F3260C0041E601 /* ChatLayout in Frameworks */,
 				7B55F7E227F327B20041E601 /* DifferenceKit in Frameworks */,
 				7B55F7E527F327E00041E601 /* FPSCounter in Frameworks */,
 				7B55F7E827F328190041E601 /* InputBarAccessoryView in Frameworks */,
+				7BBD9C26286DA48C0092CA95 /* STableLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,7 +180,7 @@
 		7B55F72127F324A70041E601 = {
 			isa = PBXGroup;
 			children = (
-				7B55F74127F325E50041E601 /* ChatLayout */,
+				7BBD9C24286DA47A0092CA95 /* STableLayout */,
 				7B55F72C27F324A70041E601 /* ChatLayout Example */,
 				7B55F72B27F324A70041E601 /* Products */,
 				7B55F74227F3260C0041E601 /* Frameworks */,
@@ -475,10 +475,10 @@
 			);
 			name = "ChatLayout Example";
 			packageProductDependencies = (
-				7B55F74327F3260C0041E601 /* ChatLayout */,
 				7B55F7E127F327B20041E601 /* DifferenceKit */,
 				7B55F7E427F327E00041E601 /* FPSCounter */,
 				7B55F7E727F328190041E601 /* InputBarAccessoryView */,
+				7BBD9C25286DA48C0092CA95 /* STableLayout */,
 			);
 			productName = "ChatLayout Example";
 			productReference = 7B55F72A27F324A70041E601 /* ChatLayout Example.app */;
@@ -833,10 +833,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7B55F74327F3260C0041E601 /* ChatLayout */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ChatLayout;
-		};
 		7B55F7E127F327B20041E601 /* DifferenceKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7B55F7E027F327B20041E601 /* XCRemoteSwiftPackageReference "DifferenceKit" */;
@@ -851,6 +847,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7B55F7E627F328190041E601 /* XCRemoteSwiftPackageReference "InputBarAccessoryView" */;
 			productName = InputBarAccessoryView;
+		};
+		7BBD9C25286DA48C0092CA95 /* STableLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = STableLayout;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

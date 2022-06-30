@@ -18,7 +18,7 @@ final class ImageController {
         }
     }
 
-    weak var delegate: any ReloadDelegate?
+    weak var delegate: ReloadDelegate?
 
     var state: ImageViewState {
         guard let image = image else {

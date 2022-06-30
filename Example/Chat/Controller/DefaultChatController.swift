@@ -12,7 +12,7 @@ import Foundation
 
 final class DefaultChatController: ChatController {
 
-    weak var delegate: any ChatControllerDelegate?
+    weak var delegate: ChatControllerDelegate?
 
     private let dataProvider: any RandomDataProvider
 

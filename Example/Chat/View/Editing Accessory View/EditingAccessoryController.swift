@@ -18,7 +18,7 @@ protocol EditingAccessoryControllerDelegate: AnyObject {
 
 final class EditingAccessoryController {
 
-    weak var delegate: any EditingAccessoryControllerDelegate?
+    weak var delegate: EditingAccessoryControllerDelegate?
 
     weak var view: EditingAccessoryView?
 
