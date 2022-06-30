@@ -44,7 +44,9 @@ public final class RoundedCornersContainerView<CustomView: UIView>: UIView {
         customView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor).isActive = true
         customView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor).isActive = true
         customView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor).isActive = true
-        customView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor).isActive = true
+		 let bottomConstraint = customView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor)
+		 bottomConstraint.priority = .defaultLow
+		 bottomConstraint.isActive = true
     }
 
     /// Lays out subviews.

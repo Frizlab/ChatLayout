@@ -16,6 +16,7 @@ typealias TextMessageCollectionCell = ContainerCollectionViewCell<MessageContain
 typealias URLCollectionCell = ContainerCollectionViewCell<MessageContainerView<EditingAccessoryView, MainContainerView<AvatarView, URLView, StatusView>>>
 typealias ImageCollectionCell = ContainerCollectionViewCell<MessageContainerView<EditingAccessoryView, MainContainerView<AvatarView, ImageView, StatusView>>>
 typealias TitleCollectionCell = ContainerCollectionViewCell<UILabel>
+typealias DateTitleCollectionCell = ContainerCollectionViewCell<RoundedCornersContainerView<UILabel>>
 typealias TypingIndicatorCollectionCell = ContainerCollectionViewCell<MessageContainerView<EditingAccessoryView, MainContainerView<AvatarPlaceholderView, TextMessageView, VoidViewFactory>>>
 
 typealias TextTitleView = ContainerCollectionReusableView<UILabel>
@@ -52,6 +53,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         collectionView.register(TextMessageCollectionCell.self, forCellWithReuseIdentifier: TextMessageCollectionCell.reuseIdentifier)
         collectionView.register(ImageCollectionCell.self, forCellWithReuseIdentifier: ImageCollectionCell.reuseIdentifier)
         collectionView.register(TitleCollectionCell.self, forCellWithReuseIdentifier: TitleCollectionCell.reuseIdentifier)
+        collectionView.register(DateTitleCollectionCell.self, forCellWithReuseIdentifier: DateTitleCollectionCell.reuseIdentifier)
         collectionView.register(TypingIndicatorCollectionCell.self, forCellWithReuseIdentifier: TypingIndicatorCollectionCell.reuseIdentifier)
         collectionView.register(TextTitleView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TextTitleView.reuseIdentifier)
         collectionView.register(TextTitleView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: TextTitleView.reuseIdentifier)
@@ -147,14 +149,17 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
         return cell
     }
 
-    private func createDateTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: STableItemAlignment, title: String) -> TitleCollectionCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TitleCollectionCell.reuseIdentifier, for: indexPath) as! TitleCollectionCell
-        cell.customView.preferredMaxLayoutWidth = (collectionView.collectionViewLayout as? STableLayout)?.layoutFrame.width ?? collectionView.frame.width
-        cell.customView.text = title
-        cell.customView.textColor = .gray
-        cell.customView.numberOfLines = 0
-        cell.customView.font = .preferredFont(forTextStyle: .caption2)
-        cell.contentView.layoutMargins = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
+    private func createDateTitle(collectionView: UICollectionView, indexPath: IndexPath, alignment: STableItemAlignment, title: String) -> DateTitleCollectionCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DateTitleCollectionCell.reuseIdentifier, for: indexPath) as! DateTitleCollectionCell
+		 cell.customView.layoutMargins = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+		 cell.customView.backgroundColor = .init(white: 0.95, alpha: 1)
+        cell.customView.customView.preferredMaxLayoutWidth = (collectionView.collectionViewLayout as? STableLayout)?.layoutFrame.width ?? collectionView.frame.width
+        cell.customView.customView.text = title
+        cell.customView.customView.textColor = .gray
+        cell.customView.customView.numberOfLines = 0
+        cell.customView.customView.font = .preferredFont(forTextStyle: .caption2)
+        cell.contentView.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
+		 cell.layer.zPosition = 42
         return cell
     }
 
@@ -311,6 +316,23 @@ extension DefaultChatCollectionDataSource : STableLayoutDelegate {
     public func shouldPresentFooter(_ sTableLayout: STableLayout, at sectionIndex: Int) -> Bool {
         return true
     }
+	
+	func pinningForItem(_ sTableLayout: STableLayout, of kind: ItemKind, at indexPath: IndexPath) -> STableItemPinning {
+		switch kind {
+			case .cell:
+				let item = sections[indexPath.section].cells[indexPath.item]
+				switch item {
+					case .message:         return .none
+					case .date:            return .top
+					case .typingIndicator: return .none
+					case .messageGroup:    return .none
+					case .deliveryStatus:  return .none
+				}
+				
+			case .footer, .header:
+				return .none
+		}
+	}
 
     public func sizeForItem(_ sTableLayout: STableLayout, of kind: ItemKind, at indexPath: IndexPath) -> ItemSize {
         switch kind {
