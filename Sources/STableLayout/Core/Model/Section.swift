@@ -80,6 +80,7 @@ struct Section {
 		if header != nil {
 			header?.offsetY = 0
 			offsetY += header?.frame.height ?? 0
+			offsetY += collectionLayout.settings.sectionHeaderToItemsSpacing
 		}
 		
 		staticItemIndexes.removeAll()

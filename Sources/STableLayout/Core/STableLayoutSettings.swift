@@ -26,6 +26,9 @@ public struct STableLayoutSettings {
 	/** Spacing between the sections. */
 	public var interSectionSpacing: CGFloat = 0
 	
+	/** Spacing between the first item of a section and the section header. */
+	public var sectionHeaderToItemsSpacing: CGFloat = 0
+	
 	/** Additional insets for the `STableLayout` content. */
 	public var additionalInsets: UIEdgeInsets = .zero
 	
