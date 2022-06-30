@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-public protocol SwipeNotifierDelegate: AnyObject {
+public protocol SwipeNotifierDelegate : AnyObject {
 
     var swipeCompletionRate: CGFloat { get set }
 

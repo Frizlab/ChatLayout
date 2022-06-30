@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class TextMessageView: UIView, ContainerCollectionViewCellDelegate {
+final class TextMessageView : UIView, ContainerCollectionViewCellDelegate {
 
     private var viewPortWidth: CGFloat = 300
 

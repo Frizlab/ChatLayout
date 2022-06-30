@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-protocol ChatCollectionDataSource: UICollectionViewDataSource, STableLayoutDelegate {
+protocol ChatCollectionDataSource : UICollectionViewDataSource, STableLayoutDelegate {
 
     var sections: [Section] { get set }
 

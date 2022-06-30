@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class EditingAccessoryView: UIView, StaticViewFactory {
+final class EditingAccessoryView : UIView, StaticViewFactory {
 
     private lazy var button = UIButton(type: .system)
 
@@ -53,7 +53,7 @@ final class EditingAccessoryView: UIView, StaticViewFactory {
 
 }
 
-extension EditingAccessoryView: EditNotifierDelegate {
+extension EditingAccessoryView : EditNotifierDelegate {
 
     var isEditing: Bool {
         get {

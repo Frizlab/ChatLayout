@@ -10,9 +10,9 @@
 import Foundation
 import UIKit
 
-public struct DefaultImageLoader: ImageLoader {
+public struct DefaultImageLoader : ImageLoader {
 
-    public enum ImageError: Error {
+    public enum ImageError : Error {
         case unknown
         case corruptedData
     }

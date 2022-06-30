@@ -11,7 +11,7 @@ import Foundation
 
 private let expirationFileAttribute = "saks.persistent-auto-purging-cache.expiration"
 
-class PersistentDataCache<CachingKey: PersistentlyCacheable>: AsyncKeyValueCaching {
+class PersistentDataCache<CachingKey : PersistentlyCacheable> : AsyncKeyValueCaching {
 
     private let fileManager = FileManager()
 

@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class MainContainerView<LeadingAccessory: StaticViewFactory, CustomView: UIView, TrailingAccessory: StaticViewFactory>: UIView, SwipeNotifierDelegate {
+final class MainContainerView<LeadingAccessory : StaticViewFactory, CustomView : UIView, TrailingAccessory : StaticViewFactory> : UIView, SwipeNotifierDelegate {
 
     var swipeCompletionRate: CGFloat = 0 {
         didSet {

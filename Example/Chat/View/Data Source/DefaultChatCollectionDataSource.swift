@@ -232,7 +232,7 @@ final class DefaultChatCollectionDataSource: NSObject, ChatCollectionDataSource 
 
 }
 
-extension DefaultChatCollectionDataSource: UICollectionViewDataSource {
+extension DefaultChatCollectionDataSource : UICollectionViewDataSource {
 
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return sections.count
@@ -302,7 +302,7 @@ extension DefaultChatCollectionDataSource: UICollectionViewDataSource {
 
 }
 
-extension DefaultChatCollectionDataSource: STableLayoutDelegate {
+extension DefaultChatCollectionDataSource : STableLayoutDelegate {
 
     public func shouldPresentHeader(_ sTableLayout: STableLayout, at sectionIndex: Int) -> Bool {
         return true

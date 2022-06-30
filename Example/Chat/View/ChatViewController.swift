@@ -423,7 +423,7 @@ extension ChatViewController: UICollectionViewDelegate {
 
 }
 
-extension ChatViewController: ChatControllerDelegate {
+extension ChatViewController : ChatControllerDelegate {
 
     func update(with sections: [Section]) {
         processUpdates(with: sections, animated: true)
@@ -585,7 +585,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
 
 }
 
-extension ChatViewController: KeyboardListenerDelegate {
+extension ChatViewController : KeyboardListenerDelegate {
 
     func keyboardWillChangeFrame(info: KeyboardInfo) {
         guard !currentInterfaceActions.options.contains(.changingFrameSize),

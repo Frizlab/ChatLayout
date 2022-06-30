@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-public struct CachingImageLoader<C: AsyncKeyValueCaching>: ImageLoader where C.CachingKey == CacheableImageKey, C.Entity == UIImage {
+public struct CachingImageLoader<C : AsyncKeyValueCaching> : ImageLoader where C.CachingKey == CacheableImageKey, C.Entity == UIImage {
 
     private let cache: C
 

@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-public final class IterativeCache<FastCache: AsyncKeyValueCaching, SlowCache: AsyncKeyValueCaching>: AsyncKeyValueCaching
+public final class IterativeCache<FastCache : AsyncKeyValueCaching, SlowCache : AsyncKeyValueCaching> : AsyncKeyValueCaching
     where
     FastCache.CachingKey == SlowCache.CachingKey, FastCache.Entity == SlowCache.Entity {
 

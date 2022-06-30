@@ -12,7 +12,7 @@ import XCTest
 
 
 
-class StateControllerInternalTests: XCTestCase {
+class StateControllerInternalTests : XCTestCase {
 	
 	func testUpdatePreferredSize() {
 		let layout = MockCollectionLayout()

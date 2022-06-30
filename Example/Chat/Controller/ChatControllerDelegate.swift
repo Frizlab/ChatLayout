@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol ChatControllerDelegate: AnyObject {
+protocol ChatControllerDelegate : AnyObject {
 
     func update(with sections: [Section])
 

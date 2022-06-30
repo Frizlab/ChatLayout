@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class AvatarView: UIView, StaticViewFactory {
+final class AvatarView : UIView, StaticViewFactory {
 
     private lazy var circleImageView = RoundedCornersContainerView<UIImageView>(frame: bounds)
 

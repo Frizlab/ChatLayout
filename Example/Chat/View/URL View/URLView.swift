@@ -13,7 +13,7 @@ import LinkPresentation
 import UIKit
 
 @available(iOS 13, *)
-final class URLView: UIView, ContainerCollectionViewCellDelegate {
+final class URLView : UIView, ContainerCollectionViewCellDelegate {
 
     private var linkView: LPLinkView?
 

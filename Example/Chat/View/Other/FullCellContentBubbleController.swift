@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class FullCellContentBubbleController<CustomView: UIView>: BubbleController {
+final class FullCellContentBubbleController<CustomView : UIView> : BubbleController {
 
     weak var bubbleView: BezierMaskedView<CustomView>? {
         didSet {

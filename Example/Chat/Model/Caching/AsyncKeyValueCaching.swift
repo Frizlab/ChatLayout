@@ -9,7 +9,7 @@
 
 import Foundation
 
-public protocol AsyncKeyValueCaching: KeyValueCaching {
+public protocol AsyncKeyValueCaching : KeyValueCaching {
 
     associatedtype CachingKey
 

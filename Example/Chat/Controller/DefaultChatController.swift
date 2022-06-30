@@ -198,7 +198,7 @@ final class DefaultChatController: ChatController {
 
 }
 
-extension DefaultChatController: RandomDataProviderDelegate {
+extension DefaultChatController : RandomDataProviderDelegate {
 
     func received(messages: [RawMessage]) {
         appendConvertingToMessages(messages)
@@ -290,7 +290,7 @@ extension DefaultChatController: RandomDataProviderDelegate {
 
 }
 
-extension DefaultChatController: ReloadDelegate {
+extension DefaultChatController : ReloadDelegate {
 
     func reloadMessage(with id: UUID) {
         repopulateMessages()
@@ -298,7 +298,7 @@ extension DefaultChatController: ReloadDelegate {
 
 }
 
-extension DefaultChatController: EditingAccessoryControllerDelegate {
+extension DefaultChatController : EditingAccessoryControllerDelegate {
 
     func deleteMessage(with id: UUID) {
         messages = Array(messages.filter { $0.id != id })

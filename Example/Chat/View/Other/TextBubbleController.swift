@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class TextBubbleController<CustomView: UIView>: BubbleController {
+final class TextBubbleController<CustomView : UIView> : BubbleController {
 
     private let type: MessageType
 

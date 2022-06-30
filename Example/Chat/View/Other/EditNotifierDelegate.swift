@@ -17,7 +17,7 @@ public enum ActionDuration {
 
 }
 
-public protocol EditNotifierDelegate: AnyObject {
+public protocol EditNotifierDelegate : AnyObject {
 
     func setIsEditing(_ isEditing: Bool, duration: ActionDuration)
 

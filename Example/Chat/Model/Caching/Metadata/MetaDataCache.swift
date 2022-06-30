@@ -12,7 +12,7 @@ import LinkPresentation
 import UIKit
 
 @available(iOS 13, *)
-final class MetaDataCache<Cache: AsyncKeyValueCaching>: AsyncKeyValueCaching where Cache.CachingKey == URL, Cache.Entity == Data {
+final class MetaDataCache<Cache : AsyncKeyValueCaching> : AsyncKeyValueCaching where Cache.CachingKey == URL, Cache.Entity == Data {
 
     private var cache: Cache
 
@@ -56,7 +56,7 @@ final class MetaDataCache<Cache: AsyncKeyValueCaching>: AsyncKeyValueCaching whe
 
 }
 
-extension URL: PersistentlyCacheable {
+extension URL : PersistentlyCacheable {
 
     var persistentIdentifier: String {
         guard let percentEncoding = absoluteString.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {

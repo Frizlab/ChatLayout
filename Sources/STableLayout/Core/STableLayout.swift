@@ -1000,7 +1000,7 @@ extension STableLayout {
 }
 
 
-extension STableLayout: STableLayoutRepresentation {
+extension STableLayout : STableLayoutRepresentation {
 	
 	func numberOfItems(in section: Int) -> Int {
 		guard let collectionView = collectionView else {

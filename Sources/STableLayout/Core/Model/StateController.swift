@@ -13,7 +13,7 @@ import UIKit
 
 
 /** This protocol exists only to serve an ability to unit test `StateController`. */
-protocol STableLayoutRepresentation: AnyObject {
+protocol STableLayoutRepresentation : AnyObject {
 	
 	var settings: STableLayoutSettings {get}
 	

@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol KeyboardListenerDelegate: AnyObject {
+protocol KeyboardListenerDelegate : AnyObject {
 
     func keyboardWillShow(info: KeyboardInfo)
     func keyboardDidShow(info: KeyboardInfo)

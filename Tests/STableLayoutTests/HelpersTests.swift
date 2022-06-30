@@ -68,12 +68,12 @@ final class HelpersTests: XCTestCase {
 				return .orderedSame
 			}
 		}
-		XCTAssertEqual((0...1000).map { $0 }.binarySearchRange(predicate: predicate), (100...200).map { $0 })
-		XCTAssertEqual((100...200).map { $0 }.binarySearchRange(predicate: predicate), (100...200).map { $0 })
-		XCTAssertEqual((0...0).map { $0 }.binarySearchRange(predicate: predicate), [])
-		XCTAssertEqual((0...150).map { $0 }.binarySearchRange(predicate: predicate), (100...150).map { $0 })
-		XCTAssertEqual((150...200).map { $0 }.binarySearchRange(predicate: predicate), (150...200).map { $0 })
-		XCTAssertEqual((150...170).map { $0 }.binarySearchRange(predicate: predicate), (150...170).map { $0 })
+		XCTAssertEqual((0...1000).map{ $0 }.binarySearchRange(predicate: predicate), (100...200).map{ $0 })
+		XCTAssertEqual((100...200).map{ $0 }.binarySearchRange(predicate: predicate), (100...200).map{ $0 })
+		XCTAssertEqual((0...0).map{ $0 }.binarySearchRange(predicate: predicate), [])
+		XCTAssertEqual((0...150).map{ $0 }.binarySearchRange(predicate: predicate), (100...150).map{ $0 })
+		XCTAssertEqual((150...200).map{ $0 }.binarySearchRange(predicate: predicate), (150...200).map{ $0 })
+		XCTAssertEqual((150...170).map{ $0 }.binarySearchRange(predicate: predicate), (150...170).map{ $0 })
 	}
 	
 }

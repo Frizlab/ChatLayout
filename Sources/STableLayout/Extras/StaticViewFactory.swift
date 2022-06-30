@@ -24,7 +24,7 @@ public protocol StaticViewFactory {
 }
 
 /// Default extension build the `UIView` using its default constructor.
-public extension StaticViewFactory where Self: UIView {
+public extension StaticViewFactory where Self : UIView {
 
     static func buildView(within bounds: CGRect) -> Self? {
         return Self(frame: bounds)
@@ -33,7 +33,7 @@ public extension StaticViewFactory where Self: UIView {
 }
 
 /// Use this factory to specify that this view should not be build and should be equal to nil within the container.
-public struct VoidViewFactory: StaticViewFactory {
+public struct VoidViewFactory : StaticViewFactory {
 
     /// Nil view placeholder type.
     public final class VoidView: UIView {

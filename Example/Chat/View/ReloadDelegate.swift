@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol ReloadDelegate: AnyObject {
+protocol ReloadDelegate : AnyObject {
 
     func reloadMessage(with id: UUID)
 

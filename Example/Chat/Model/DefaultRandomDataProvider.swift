@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-protocol RandomDataProviderDelegate: AnyObject {
+protocol RandomDataProviderDelegate : AnyObject {
 
     func received(messages: [RawMessage])
 
@@ -32,7 +32,7 @@ protocol RandomDataProvider {
 
 }
 
-final class DefaultRandomDataProvider: RandomDataProvider {
+final class DefaultRandomDataProvider : RandomDataProvider {
 
     weak var delegate: RandomDataProviderDelegate?
 

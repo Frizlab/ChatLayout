@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class ImageView: UIView, ContainerCollectionViewCellDelegate {
+final class ImageView : UIView, ContainerCollectionViewCellDelegate {
 
     private lazy var stackView = UIStackView(frame: bounds)
 

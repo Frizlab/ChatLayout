@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class AvatarPlaceholderView: UIView, StaticViewFactory {
+final class AvatarPlaceholderView : UIView, StaticViewFactory {
 
     override init(frame: CGRect) {
         super.init(frame: frame)

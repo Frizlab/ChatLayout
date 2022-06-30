@@ -11,7 +11,7 @@ import STableLayout
 import Foundation
 import UIKit
 
-final class StatusView: UIView, StaticViewFactory {
+final class StatusView : UIView, StaticViewFactory {
 
     private lazy var imageView = UIImageView(frame: bounds)
 

@@ -9,7 +9,7 @@
 
 import Foundation
 
-public final class MemoryDataCache<CachingKey: Hashable>: AsyncKeyValueCaching {
+public final class MemoryDataCache<CachingKey : Hashable> : AsyncKeyValueCaching {
 
     private final class WrappedKey: NSObject {
 

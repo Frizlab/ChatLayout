@@ -39,7 +39,7 @@ public enum CellLayoutContainerViewAlignment {
 /// `CellLayoutContainerView` is a container view that helps to arrange the views in a horizontal cell-alike layout with an optional `LeadingAccessory` first,
 /// a `CustomView` next and am optional `TrailingAccessory` last. Use `VoidViewFactory` to specify that `LeadingAccessory` or `TrailingAccessory` views should not be
 /// allocated.
-public final class CellLayoutContainerView<LeadingAccessory: StaticViewFactory, CustomView: UIView, TrailingAccessory: StaticViewFactory>: UIView {
+public final class CellLayoutContainerView<LeadingAccessory : StaticViewFactory, CustomView: UIView, TrailingAccessory : StaticViewFactory> : UIView {
 
     /// Leading accessory view.
     public lazy var leadingView: LeadingAccessory.View? = LeadingAccessory.buildView(within: bounds)

@@ -12,7 +12,7 @@ import XCTest
 
 
 
-class StateControllerProcessUpdatesTests: XCTestCase {
+class StateControllerProcessUpdatesTests : XCTestCase {
 	
 	override func setUp() {
 		super.setUp()
